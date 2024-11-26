@@ -3,13 +3,14 @@ package main
 import (
 	"log"
 
-	"github.com/gofiber/fiber/v3"
+	"github.com/gofiber/fiber/v2"
 )
 
 func main() {
 	app := fiber.New()
+	app.Static("/", "./public")
 
-	app.Get("/", func(c fiber.Ctx) error {
+	app.Get("/", func(c *fiber.Ctx) error {
 		return c.SendString("Hello World!")
 	})
 
