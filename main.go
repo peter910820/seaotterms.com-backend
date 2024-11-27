@@ -10,7 +10,11 @@ func main() {
 	app := fiber.New()
 	app.Static("/", "./public")
 
-	app.Use(func(c *fiber.Ctx) error {
+	app.Post("/loginHandler", func(c *fiber.Ctx) error {
+		return c.SendString("test")
+	})
+
+	app.Get("*", func(c *fiber.Ctx) error {
 		return c.SendFile("./public/index.html")
 	})
 
