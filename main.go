@@ -32,17 +32,24 @@ func main() {
 		var data map[string]interface{}
 
 		if err := c.BodyParser(&data); err != nil {
-			log.Printf("%v", err)
+			log.Fatalf("%v", err)
 		}
 		log.Printf("Received data: %+v\n", data)
 
 		// database handler
 		err = crud.Register(&data)
 		if err != nil {
-			log.Fatalf("%v", err)
+			log.Printf("%v\n", err)
+			return c.JSON(fiber.Map{
+				"status":  "error",
+				"message": err.Error(),
+			})
 		}
 
-		return c.SendString("test")
+		return c.JSON(fiber.Map{
+			"status":  "success",
+			"message": "User registered",
+		})
 	})
 	app.Post("/loginHandler", func(c *fiber.Ctx) error {
 		return c.SendString("test")
