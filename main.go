@@ -9,6 +9,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/joho/godotenv"
 
+	"seaotterms.com-backend/crud"
 	"seaotterms.com-backend/model"
 )
 
@@ -37,10 +38,15 @@ func main() {
 
 	app.Post("/registerHandler", func(c *fiber.Ctx) error {
 		var data map[string]interface{}
+
 		if err := c.BodyParser(&data); err != nil {
 			log.Fatalf("%v", err)
 		}
 		fmt.Printf("Received data: %+v\n", data)
+
+		// database handler
+		crud.Register()
+
 		return c.SendString("test")
 	})
 	app.Post("/loginHandler", func(c *fiber.Ctx) error {
