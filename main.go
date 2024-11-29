@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
 
@@ -12,13 +11,6 @@ import (
 	"seaotterms.com-backend/crud"
 	"seaotterms.com-backend/model"
 )
-
-// type FormData struct {
-// 	username      string
-// 	email         string
-// 	password      string
-// 	checkPassword string
-// }
 
 func main() {
 	err := godotenv.Load()
@@ -40,12 +32,15 @@ func main() {
 		var data map[string]interface{}
 
 		if err := c.BodyParser(&data); err != nil {
-			log.Fatalf("%v", err)
+			log.Printf("%v", err)
 		}
-		fmt.Printf("Received data: %+v\n", data)
+		log.Printf("Received data: %+v\n", data)
 
 		// database handler
-		crud.Register()
+		err = crud.Register(&data)
+		if err != nil {
+			log.Fatalf("%v", err)
+		}
 
 		return c.SendString("test")
 	})
