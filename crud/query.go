@@ -11,6 +11,8 @@ import (
 
 func Query() {
 	var accounts model.Account
+	dsn := initDsn()
+
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Fatalf("連接資料庫失敗: %v", err)
