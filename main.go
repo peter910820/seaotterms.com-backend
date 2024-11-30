@@ -33,7 +33,7 @@ func main() {
 
 	app.Static("/", "./public")
 
-	app.Post("/registerHandler", registerHandler)
+	app.Post("/api/registerHandler", registerHandler)
 
 	app.Post("/api/loginHandler", loginHandler)
 
