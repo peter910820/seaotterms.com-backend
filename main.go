@@ -1,16 +1,21 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/session/v2"
 	"github.com/joho/godotenv"
 
+	"seaotterms.com-backend/internal/login"
 	"seaotterms.com-backend/internal/model"
 	"seaotterms.com-backend/internal/register"
 )
+
+var store = session.New()
 
 func main() {
 	err := godotenv.Load()
@@ -28,36 +33,66 @@ func main() {
 
 	app.Static("/", "./public")
 
-	app.Post("/registerHandler", func(c *fiber.Ctx) error {
-		var data map[string]interface{}
+	app.Post("/registerHandler", registerHandler)
 
-		if err := c.BodyParser(&data); err != nil {
-			log.Fatalf("%v", err)
-		}
-		log.Printf("Received data: %+v\n", data)
-
-		// database handler
-		err = register.Register(&data)
-		if err != nil {
-			log.Printf("%v\n", err)
-			return c.JSON(fiber.Map{
-				"status":  "error",
-				"message": err.Error(),
-			})
-		}
-
-		return c.JSON(fiber.Map{
-			"status":  "success",
-			"message": "User registered",
-		})
-	})
-	app.Post("/loginHandler", func(c *fiber.Ctx) error {
-		return c.SendString("test")
-	})
+	app.Post("/api/loginHandler", loginHandler)
 
 	app.Get("*", func(c *fiber.Ctx) error {
 		return c.SendFile("./public/index.html")
 	})
 
 	log.Fatal(app.Listen(":3000"))
+}
+
+func registerHandler(c *fiber.Ctx) error {
+	var data map[string]interface{}
+
+	if err := c.BodyParser(&data); err != nil {
+		log.Fatalf("%v", err)
+	}
+	log.Printf("Received data: %+v\n", data)
+
+	// database handler
+	err := register.Register(&data)
+	if err != nil {
+		log.Printf("%v\n", err)
+		return c.JSON(fiber.Map{
+			"status":  "error",
+			"message": err.Error(),
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"status":  "success",
+		"message": "User registered",
+	})
+}
+
+func loginHandler(c *fiber.Ctx) error {
+	var data login.LoginData
+
+	if err := c.BodyParser(&data); err != nil {
+		log.Fatalf("%v", err)
+	}
+	fmt.Printf("%v\n", data)
+
+	err := login.LoginHandler(&data)
+	if err != nil {
+		log.Printf("%v\n", err)
+		return c.JSON(fiber.Map{
+			"status":  "error",
+			"message": err.Error()})
+	}
+	// handle session
+	sess := store.Get(c)
+	sess.Set("username", data.Username)
+	if err := sess.Save(); err != nil {
+		return c.JSON(fiber.Map{
+			"status":  "error",
+			"message": err.Error()})
+	}
+
+	return c.JSON(fiber.Map{
+		"status":  "success",
+		"message": "Login successful"})
 }

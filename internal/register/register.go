@@ -25,7 +25,7 @@ func Register(formData *map[string]interface{}) error {
 
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
-		log.Fatalf("連接資料庫失敗: %v", err)
+		log.Fatalf("database access error: %v", err)
 	}
 
 	result := db.Model(&model.Account{}).Find(&find)
