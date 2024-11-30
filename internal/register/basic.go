@@ -1,4 +1,4 @@
-package crud
+package register
 
 import (
 	"errors"
@@ -7,6 +7,7 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 
+	"seaotterms.com-backend/internal/crud"
 	"seaotterms.com-backend/internal/model"
 )
 
@@ -17,7 +18,7 @@ type apiAccount struct {
 
 func Register(formData *map[string]interface{}) error {
 	var find []apiAccount
-	dsn := initDsn()
+	dsn := crud.InitDsn()
 	data := model.Account{Username: (*formData)["username"].(string),
 		Password: (*formData)["password"].(string),
 		Email:    (*formData)["email"].(string)}

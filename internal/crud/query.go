@@ -11,7 +11,7 @@ import (
 
 func Query() {
 	var accounts model.Account
-	dsn := initDsn()
+	dsn := InitDsn()
 
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {

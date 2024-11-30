@@ -8,8 +8,8 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/joho/godotenv"
 
-	"seaotterms.com-backend/internal/crud"
 	"seaotterms.com-backend/internal/model"
+	"seaotterms.com-backend/internal/register"
 )
 
 func main() {
@@ -37,7 +37,7 @@ func main() {
 		log.Printf("Received data: %+v\n", data)
 
 		// database handler
-		err = crud.Register(&data)
+		err = register.Register(&data)
 		if err != nil {
 			log.Printf("%v\n", err)
 			return c.JSON(fiber.Map{
