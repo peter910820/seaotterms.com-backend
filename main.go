@@ -38,6 +38,11 @@ func main() {
 	app.Post("/api/loginHandler", loginHandler)
 
 	app.Get("*", func(c *fiber.Ctx) error {
+		sess := store.Get(c)
+		username := sess.Get("username")
+		if username == nil {
+			fmt.Println("error")
+		}
 		return c.SendFile("./public/index.html")
 	})
 
