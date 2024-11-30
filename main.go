@@ -8,8 +8,8 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/joho/godotenv"
 
-	"seaotterms.com-backend/crud"
-	"seaotterms.com-backend/model"
+	"seaotterms.com-backend/internal/crud"
+	"seaotterms.com-backend/internal/model"
 )
 
 func main() {

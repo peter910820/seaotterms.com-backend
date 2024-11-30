@@ -7,7 +7,7 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 
-	"seaotterms.com-backend/model"
+	"seaotterms.com-backend/internal/model"
 )
 
 type apiAccount struct {
