@@ -15,7 +15,7 @@ func Migration() {
 	if err != nil {
 		log.Fatalf(".env file error: %v", err)
 	}
-	// PostgreSQL 連線字串
+
 	dsn := fmt.Sprintf("user=%s password=%s dbname=%s port=%s sslmode=disable",
 		os.Getenv("DB_OWNER"),
 		os.Getenv("DB_PASSWORD"),
