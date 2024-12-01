@@ -10,6 +10,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/session"
 	"github.com/joho/godotenv"
 
+	"seaotterms.com-backend/internal/api"
 	"seaotterms.com-backend/internal/login"
 	"seaotterms.com-backend/internal/model"
 	"seaotterms.com-backend/internal/register"
@@ -34,8 +35,8 @@ func main() {
 	app.Static("/", "./public")
 
 	app.Post("/api/registerHandler", registerHandler)
-
 	app.Post("/api/loginHandler", loginHandler)
+	app.Post("/api/check-session", sessionHandler)
 
 	app.Get("*", func(c *fiber.Ctx) error {
 		sess, err := store.Get(c)
@@ -90,4 +91,14 @@ func loginHandler(c *fiber.Ctx) error {
 
 	return c.JSON(fiber.Map{
 		"msg": "登入成功"})
+}
+
+func sessionHandler(c *fiber.Ctx) error {
+	err := api.CheckSession(c, store)
+	if err != nil {
+		log.Printf("%v\n", err)
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"msg": err.Error()})
+	}
+	return c.SendStatus(fiber.StatusOK)
 }

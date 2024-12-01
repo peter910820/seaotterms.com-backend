@@ -45,14 +45,11 @@ func Login(c *fiber.Ctx, store *session.Store, data *LoginData) error {
 				if err := sess.Save(); err != nil {
 					log.Fatalln(err.Error())
 				}
-				log.Printf("%s login success\n", data.Username)
 				return nil
 			} else {
-				log.Printf("%s login error, password not correct\n", data.Username)
 				return errors.New("login error, password not correct")
 			}
 		}
 	}
-	log.Println("user not found")
 	return errors.New("user not found")
 }
