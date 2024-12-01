@@ -7,7 +7,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
-	"github.com/gofiber/session/v2"
+	"github.com/gofiber/fiber/v2/middleware/session"
 	"github.com/joho/godotenv"
 
 	"seaotterms.com-backend/internal/login"
@@ -38,7 +38,10 @@ func main() {
 	app.Post("/api/loginHandler", loginHandler)
 
 	app.Get("*", func(c *fiber.Ctx) error {
-		sess := store.Get(c)
+		sess, err := store.Get(c)
+		if err != nil {
+			log.Fatalf("%v", err)
+		}
 		username := sess.Get("username")
 		if username == nil {
 			fmt.Println("error")

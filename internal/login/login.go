@@ -8,7 +8,7 @@ import (
 	"gorm.io/gorm"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/session/v2"
+	"github.com/gofiber/fiber/v2/middleware/session"
 
 	"seaotterms.com-backend/internal/crud"
 	"seaotterms.com-backend/internal/model"
@@ -19,7 +19,7 @@ type LoginData struct {
 	Password string `json:"password"`
 }
 
-func Login(c *fiber.Ctx, store *session.Session, data *LoginData) error {
+func Login(c *fiber.Ctx, store *session.Store, data *LoginData) error {
 	var databaseData []LoginData
 
 	dsn := crud.InitDsn()
@@ -37,7 +37,10 @@ func Login(c *fiber.Ctx, store *session.Session, data *LoginData) error {
 			log.Printf("Username %s try to login\n", data.Username)
 			if data.Password == col.Password {
 				// set session
-				sess := store.Get(c)
+				sess, err := store.Get(c)
+				if err != nil {
+					log.Fatal(err.Error())
+				}
 				sess.Set("username", data.Username)
 				if err := sess.Save(); err != nil {
 					log.Fatalln(err.Error())
