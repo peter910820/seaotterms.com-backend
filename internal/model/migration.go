@@ -26,4 +26,5 @@ func Migration() {
 		log.Fatalf("連接資料庫失敗: %v", err)
 	}
 	db.AutoMigrate(&Account{})
+	db.AutoMigrate(&Article{})
 }
