@@ -16,12 +16,16 @@ type apiAccount struct {
 	Email    string
 }
 
-func Register(formData *map[string]interface{}) error {
+type RegisterData struct {
+	Username      string `json:"username"`
+	Email         string `json:"email"`
+	Password      string `json:"password"`
+	CheckPassword string `json:"checkPassword"`
+}
+
+func Register(data *RegisterData) error {
 	var find []apiAccount
 	dsn := crud.InitDsn()
-	data := model.Account{Username: (*formData)["username"].(string),
-		Password: (*formData)["password"].(string),
-		Email:    (*formData)["email"].(string)}
 
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
@@ -41,7 +45,13 @@ func Register(formData *map[string]interface{}) error {
 		} else {
 		}
 	}
-	result = db.Create(&data)
+
+	dataCreate := model.Account{
+		Username: data.Username,
+		Password: data.Password,
+		Email:    data.Email,
+	}
+	result = db.Create(&dataCreate)
 	if result.Error != nil {
 		log.Fatalf("%v\n", result.Error)
 	}

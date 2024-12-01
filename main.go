@@ -50,14 +50,13 @@ func main() {
 }
 
 func registerHandler(c *fiber.Ctx) error {
-	var data map[string]interface{}
+	var data register.RegisterData
 
 	if err := c.BodyParser(&data); err != nil {
 		log.Fatalf("%v", err)
 	}
 	log.Printf("Received data: %+v\n", data)
 
-	// database handler
 	err := register.Register(&data)
 	if err != nil {
 		log.Printf("%v\n", err)
