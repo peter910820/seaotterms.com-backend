@@ -19,6 +19,8 @@ import (
 var store = session.New()
 
 func main() {
+	frontendFolder := "./public"
+
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatalf(".env file error: %v", err)
@@ -26,28 +28,21 @@ func main() {
 
 	if os.Getenv("ENV") == "development" {
 		model.Migration()
+		frontendFolder = "./dist"
 	}
 	app := fiber.New()
 
 	app.Use(cors.New(cors.Config{AllowOrigins: "http://localhost:8080",
 		AllowMethods: "POST"}))
 
-	app.Static("/", "./public")
+	app.Static("/", frontendFolder)
 
 	app.Post("/api/registerHandler", registerHandler)
 	app.Post("/api/loginHandler", loginHandler)
 	app.Post("/api/check-session", sessionHandler)
 
 	app.Get("*", func(c *fiber.Ctx) error {
-		sess, err := store.Get(c)
-		if err != nil {
-			log.Fatalf("%v", err)
-		}
-		username := sess.Get("username")
-		if username == nil {
-			fmt.Println("error")
-		}
-		return c.SendFile("./public/index.html")
+		return c.SendFile(frontendFolder + "/index.html")
 	})
 
 	log.Fatal(app.Listen(":3000"))
@@ -94,6 +89,7 @@ func loginHandler(c *fiber.Ctx) error {
 }
 
 func sessionHandler(c *fiber.Ctx) error {
+	log.Println("check session")
 	err := api.CheckSession(c, store)
 	if err != nil {
 		log.Printf("%v\n", err)
