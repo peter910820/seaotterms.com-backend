@@ -61,15 +61,13 @@ func registerHandler(c *fiber.Ctx) error {
 	err := register.Register(&data)
 	if err != nil {
 		log.Printf("%v\n", err)
-		return c.JSON(fiber.Map{
-			"status":  "error",
-			"message": err.Error(),
+		return c.Status(fiber.StatusConflict).JSON(fiber.Map{
+			"msg": err.Error(),
 		})
 	}
 
 	return c.JSON(fiber.Map{
-		"status":  "success",
-		"message": "User registered",
+		"msg": "User registered",
 	})
 }
 
@@ -84,20 +82,17 @@ func loginHandler(c *fiber.Ctx) error {
 	err := login.LoginHandler(&data)
 	if err != nil {
 		log.Printf("%v\n", err)
-		return c.JSON(fiber.Map{
-			"status":  "error",
-			"message": err.Error()})
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"msg": err.Error()})
 	}
 	// handle session
 	sess := store.Get(c)
 	sess.Set("username", data.Username)
 	if err := sess.Save(); err != nil {
-		return c.JSON(fiber.Map{
-			"status":  "error",
-			"message": err.Error()})
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"msg": err.Error()})
 	}
 
 	return c.JSON(fiber.Map{
-		"status":  "success",
-		"message": "Login successful"})
+		"msg": "Login successful"})
 }
