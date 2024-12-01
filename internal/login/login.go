@@ -2,14 +2,13 @@ package login
 
 import (
 	"errors"
-	"fmt"
 	"log"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 
-	// "github.com/gofiber/fiber/v2"
-	// "github.com/gofiber/session/v2"
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/session/v2"
 
 	"seaotterms.com-backend/internal/crud"
 	"seaotterms.com-backend/internal/model"
@@ -20,7 +19,7 @@ type LoginData struct {
 	Password string `json:"password"`
 }
 
-func LoginHandler(data *LoginData) error {
+func Login(c *fiber.Ctx, store *session.Session, data *LoginData) error {
 	var databaseData []LoginData
 
 	dsn := crud.InitDsn()
@@ -35,14 +34,22 @@ func LoginHandler(data *LoginData) error {
 
 	for _, col := range databaseData {
 		if data.Username == col.Username {
-			fmt.Printf("Username %s try to login", data.Username)
+			log.Printf("Username %s try to login\n", data.Username)
 			if data.Password == col.Password {
-
+				// set session
+				sess := store.Get(c)
+				sess.Set("username", data.Username)
+				if err := sess.Save(); err != nil {
+					log.Fatalln(err.Error())
+				}
+				log.Printf("%s login success\n", data.Username)
+				return nil
 			} else {
+				log.Printf("%s login error, password not correct\n", data.Username)
 				return errors.New("login error, password not correct")
 			}
-		} else {
 		}
 	}
-	return nil
+	log.Println("user not found")
+	return errors.New("user not found")
 }
