@@ -79,6 +79,7 @@ func loginHandler(c *fiber.Ctx) error {
 	err := api.Login(c, store, &data)
 	if err != nil {
 		log.Printf("%v\n", err)
+		// 401
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"msg": err.Error()})
 	}
@@ -88,10 +89,23 @@ func loginHandler(c *fiber.Ctx) error {
 }
 
 func createArticle(c *fiber.Ctx) error {
+	var data api.ArticleData
+	// check session
 	err := sessionHandler(c)
 	if err != nil {
 		log.Fatalln(err.Error())
 	}
+
+	if err := c.BodyParser(&data); err != nil {
+		log.Fatalf("%v", err)
+	}
+	err = api.CreateArticle(&data)
+	if err != nil {
+		// 500
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"msg": err.Error()})
+	}
+
 	return c.SendStatus(fiber.StatusOK)
 }
 
