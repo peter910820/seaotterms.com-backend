@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"log"
+	"github.com/sirupsen/logrus"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/session"
@@ -10,22 +10,25 @@ import (
 // closure
 func SessionHandler(store *session.Store) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		log.Printf("store: %v", store)
 		confirmRoutes := []string{"/create-article", "/api/check-session"}
 		if !isPathIn(c.Path(), confirmRoutes) {
 			return c.Next()
 		}
+		logrus.Infof("path %s execute middleware", c.Path())
+		logrus.Debugf("store: %v", store)
 		// check session
-		log.Println("check session")
+		logrus.Info("check session")
 		sess, err := store.Get(c)
 		if err != nil {
-			log.Fatal(err.Error())
+			logrus.Fatal(err)
 		}
 		username := sess.Get("username")
 		if username == nil {
+			logrus.Infof("visitors is not logged in")
 			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-				"msg": "user is signout"})
+				"msg": "visitors is not logged in"})
 		}
+		logrus.Infof("%s is access %s", username, c.Path())
 		return c.Next()
 	}
 

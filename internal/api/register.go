@@ -2,7 +2,8 @@ package api
 
 import (
 	"errors"
-	"log"
+
+	"github.com/sirupsen/logrus"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -29,12 +30,12 @@ func Register(data *RegisterData) error {
 
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
-		log.Fatalf("database access error: %v", err)
+		logrus.Fatalf("database access error: %v", err)
 	}
 
 	result := db.Model(&model.Account{}).Find(&find)
 	if result.Error != nil {
-		log.Fatalf("%v\n", result.Error)
+		logrus.Fatalf("%v", result.Error)
 	}
 	// check Username & Email exist
 	for _, col := range find {
@@ -53,7 +54,7 @@ func Register(data *RegisterData) error {
 	}
 	result = db.Create(&dataCreate)
 	if result.Error != nil {
-		log.Fatalf("%v\n", result.Error)
+		logrus.Fatalf("%v", result.Error)
 	}
 	return nil
 }

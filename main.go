@@ -1,9 +1,9 @@
 package main
 
 import (
-	"fmt"
-	"log"
 	"os"
+
+	"github.com/sirupsen/logrus"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -15,18 +15,25 @@ import (
 	"seaotterms.com-backend/internal/model"
 )
 
+// init store(session)
 var store = session.New(session.Config{
 	CookieHTTPOnly: true,
 })
 
 func main() {
-	frontendFolder := "./public"
+	// logrus settings
+	logrus.SetFormatter(&logrus.TextFormatter{
+		ForceColors:   true,
+		FullTimestamp: true,
+	})
+	logrus.SetLevel(logrus.DebugLevel)
 
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatalf(".env file error: %v", err)
+		logrus.Fatalf(".env file load error: %v", err)
 	}
-
+	// set frontendFolder
+	frontendFolder := "./public"
 	if os.Getenv("ENV") == "development" {
 		model.Migration()
 		frontendFolder = "./dist"
@@ -49,20 +56,20 @@ func main() {
 		return c.SendFile(frontendFolder + "/index.html")
 	})
 
-	log.Fatal(app.Listen(":3000"))
+	logrus.Fatal(app.Listen(":3000"))
 }
 
 func registerHandler(c *fiber.Ctx) error {
 	var data api.RegisterData
 
 	if err := c.BodyParser(&data); err != nil {
-		log.Fatalf("%v", err)
+		logrus.Fatalf("%v", err)
 	}
-	log.Printf("Received data: %+v\n", data)
+	logrus.Debugf("Received data: %+v", data)
 
 	err := api.Register(&data)
 	if err != nil {
-		log.Printf("%v\n", err)
+		logrus.Infof("%v", err)
 		return c.Status(fiber.StatusConflict).JSON(fiber.Map{
 			"msg": err.Error(),
 		})
@@ -77,13 +84,13 @@ func loginHandler(c *fiber.Ctx) error {
 	var data api.LoginData
 
 	if err := c.BodyParser(&data); err != nil {
-		log.Fatalf("%v", err)
+		logrus.Fatalf("%v", err)
 	}
-	fmt.Printf("%v\n", data)
+	logrus.Debugf("login page form data: %v", data)
 
 	err := api.Login(c, store, &data)
 	if err != nil {
-		log.Printf("%v\n", err)
+		logrus.Infof("%v", err)
 		// 401
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"msg": err.Error()})
@@ -97,7 +104,7 @@ func createArticle(c *fiber.Ctx) error {
 	var data api.ArticleData
 
 	if err := c.BodyParser(&data); err != nil {
-		log.Fatalf("%v", err)
+		logrus.Fatalf("%v", err)
 	}
 	err := api.CreateArticle(&data)
 	if err != nil {
@@ -110,10 +117,10 @@ func createArticle(c *fiber.Ctx) error {
 }
 
 func sessionHandler(c *fiber.Ctx) error {
-	// log.Println("check session")
+	// logrus.Println("check session")
 	// err := api.CheckSession(c, store)
 	// if err != nil {
-	// 	log.Printf("%v\n", err)
+	// 	logrus.Printf("%v\n", err)
 	// 	return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 	// 		"msg": err.Error()})
 	// }

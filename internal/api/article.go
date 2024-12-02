@@ -1,9 +1,7 @@
 package api
 
 import (
-	// "errors"
-	"fmt"
-	"log"
+	"github.com/sirupsen/logrus"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -27,7 +25,7 @@ func CreateArticle(data *ArticleData) error {
 	dsn := crud.InitDsn()
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
-		log.Fatalf("database access error: %v", err)
+		logrus.Fatalf("database access error: %v", err)
 	}
 
 	dataCreate := model.Article{
@@ -36,10 +34,10 @@ func CreateArticle(data *ArticleData) error {
 		Tags:     data.Tags,
 		Content:  data.Content,
 	}
-	fmt.Printf("%v\n", dataCreate)
+	logrus.Infof("A article has been create, title name: %s", dataCreate.Title)
 	result := db.Create(&dataCreate)
 	if result.Error != nil {
-		log.Fatalf("%v\n", result.Error)
+		logrus.Fatalf("%v\n", result.Error)
 	}
 	return nil
 }

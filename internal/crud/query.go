@@ -2,7 +2,8 @@ package crud
 
 import (
 	"fmt"
-	"log"
+
+	"github.com/sirupsen/logrus"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -15,11 +16,11 @@ func Query() {
 
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
-		log.Fatalf("連接資料庫失敗: %v", err)
+		logrus.Fatalf("連接資料庫失敗: %v", err)
 	}
 	result := db.Find(&accounts)
 	if result.Error != nil {
-		log.Fatalf("%v", result.Error)
+		logrus.Fatalf("%v", result.Error)
 	}
 	fmt.Printf("%v\n", result)
 }

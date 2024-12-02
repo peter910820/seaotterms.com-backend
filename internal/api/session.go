@@ -2,7 +2,8 @@ package api
 
 import (
 	"errors"
-	"log"
+
+	"github.com/sirupsen/logrus"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/session"
@@ -11,7 +12,7 @@ import (
 func CheckSession(c *fiber.Ctx, store *session.Store) error {
 	sess, err := store.Get(c)
 	if err != nil {
-		log.Fatal(err.Error())
+		logrus.Fatal(err)
 	}
 	username := sess.Get("username")
 	if username == nil {

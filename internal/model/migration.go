@@ -2,8 +2,9 @@ package model
 
 import (
 	"fmt"
-	"log"
 	"os"
+
+	"github.com/sirupsen/logrus"
 
 	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
@@ -13,7 +14,7 @@ import (
 func Migration() {
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatalf(".env file error: %v", err)
+		logrus.Fatalf(".env file error: %v", err)
 	}
 
 	dsn := fmt.Sprintf("user=%s password=%s dbname=%s port=%s sslmode=disable",
@@ -23,7 +24,7 @@ func Migration() {
 		os.Getenv("DB_PORT"))
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
-		log.Fatalf("連接資料庫失敗: %v", err)
+		logrus.Fatalf("連接資料庫失敗: %v", err)
 	}
 	db.AutoMigrate(&Account{})
 	db.AutoMigrate(&Article{})

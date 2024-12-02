@@ -2,7 +2,8 @@ package api
 
 import (
 	"errors"
-	"log"
+
+	"github.com/sirupsen/logrus"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -25,31 +26,34 @@ func Login(c *fiber.Ctx, store *session.Store, data *LoginData) error {
 	dsn := crud.InitDsn()
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
-		log.Fatalf("database access error: %v", err)
+		logrus.Fatalf("database access error: %v", err)
 	}
 	r := db.Model(&model.Account{}).Find(&databaseData)
 	if r.Error != nil {
-		log.Fatalf("%v\n", r.Error)
+		logrus.Fatalf("%v\n", r.Error)
 	}
 
 	for _, col := range databaseData {
 		if data.Username == col.Username {
-			log.Printf("Username %s try to login\n", data.Username)
+			logrus.Infof("Username %s try to login", data.Username)
 			if data.Password == col.Password {
 				// set session
 				sess, err := store.Get(c)
 				if err != nil {
-					log.Fatal(err.Error())
+					logrus.Fatal(err)
 				}
 				sess.Set("username", data.Username)
 				if err := sess.Save(); err != nil {
-					log.Fatalln(err.Error())
+					logrus.Fatal(err)
 				}
+				logrus.Infof("Username %s login success", data.Username)
 				return nil
 			} else {
+				logrus.Infof("login error, password not correct")
 				return errors.New("login error, password not correct")
 			}
 		}
 	}
+	logrus.Infof("user not found")
 	return errors.New("user not found")
 }
