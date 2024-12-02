@@ -11,10 +11,13 @@ import (
 	"github.com/joho/godotenv"
 
 	"seaotterms.com-backend/internal/api"
+	"seaotterms.com-backend/internal/middleware"
 	"seaotterms.com-backend/internal/model"
 )
 
-var store = session.New()
+var store = session.New(session.Config{
+	CookieHTTPOnly: true,
+})
 
 func main() {
 	frontendFolder := "./public"
@@ -32,6 +35,8 @@ func main() {
 
 	app.Use(cors.New(cors.Config{AllowOrigins: "http://localhost:8080",
 		AllowMethods: "POST"}))
+	// middleware
+	app.Use(middleware.SessionHandler(store))
 
 	app.Static("/", frontendFolder)
 
@@ -90,16 +95,11 @@ func loginHandler(c *fiber.Ctx) error {
 
 func createArticle(c *fiber.Ctx) error {
 	var data api.ArticleData
-	// check session
-	err := sessionHandler(c)
-	if err != nil {
-		log.Fatalln(err.Error())
-	}
 
 	if err := c.BodyParser(&data); err != nil {
 		log.Fatalf("%v", err)
 	}
-	err = api.CreateArticle(&data)
+	err := api.CreateArticle(&data)
 	if err != nil {
 		// 500
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
@@ -110,12 +110,12 @@ func createArticle(c *fiber.Ctx) error {
 }
 
 func sessionHandler(c *fiber.Ctx) error {
-	log.Println("check session")
-	err := api.CheckSession(c, store)
-	if err != nil {
-		log.Printf("%v\n", err)
-		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-			"msg": err.Error()})
-	}
+	// log.Println("check session")
+	// err := api.CheckSession(c, store)
+	// if err != nil {
+	// 	log.Printf("%v\n", err)
+	// 	return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+	// 		"msg": err.Error()})
+	// }
 	return c.SendStatus(fiber.StatusOK)
 }
