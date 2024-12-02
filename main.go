@@ -17,7 +17,7 @@ import (
 
 // init store(session)
 var store = session.New(session.Config{
-	CookieHTTPOnly: true,
+	// CookieHTTPOnly: true,
 })
 
 func main() {
