@@ -49,7 +49,10 @@ func main() {
 
 	app.Post("/api/registerHandler", registerHandler)
 	app.Post("/api/loginHandler", loginHandler)
+
 	app.Post("/api/create-article", createArticle)
+	app.Post("/api/articles", api.GetArticle)
+
 	app.Post("/api/check-session", sessionHandler)
 
 	app.Get("*", func(c *fiber.Ctx) error {

@@ -6,7 +6,7 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 
-	// "github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2"
 
 	"github.com/lib/pq"
 	"seaotterms.com-backend/internal/crud"
@@ -21,7 +21,6 @@ type ArticleData struct {
 }
 
 func CreateArticle(data *ArticleData) error {
-	// var articleData ArticleData
 	dsn := crud.InitDsn()
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
@@ -40,4 +39,21 @@ func CreateArticle(data *ArticleData) error {
 		logrus.Fatalf("%v\n", result.Error)
 	}
 	return nil
+}
+
+func GetArticle(c *fiber.Ctx) error {
+	var articleData []model.Article
+
+	dsn := crud.InitDsn()
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	if err != nil {
+		logrus.Fatalf("database access error: %v", err)
+	}
+	result := db.Find(&articleData)
+	if result.Error != nil {
+		logrus.Fatalf("%v", result.Error)
+	}
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"data": articleData,
+	})
 }
