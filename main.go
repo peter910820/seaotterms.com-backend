@@ -53,7 +53,7 @@ func main() {
 	app.Post("/api/create-article", createArticle)
 	app.Post("/api/articles", api.GetArticle)
 
-	app.Post("/api/check-session", sessionHandler)
+	app.Post("/api/verify", verifyHandler)
 
 	app.Get("*", func(c *fiber.Ctx) error {
 		return c.SendFile(frontendFolder + "/index.html")
@@ -119,13 +119,6 @@ func createArticle(c *fiber.Ctx) error {
 	return c.SendStatus(fiber.StatusOK)
 }
 
-func sessionHandler(c *fiber.Ctx) error {
-	// logrus.Println("check session")
-	// err := api.CheckSession(c, store)
-	// if err != nil {
-	// 	logrus.Printf("%v\n", err)
-	// 	return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-	// 		"msg": err.Error()})
-	// }
+func verifyHandler(c *fiber.Ctx) error {
 	return c.SendStatus(fiber.StatusOK)
 }
