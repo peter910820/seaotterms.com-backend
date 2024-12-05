@@ -59,5 +59,27 @@ func GetArticle(c *fiber.Ctx) error {
 }
 
 func GetSingleArticle(c *fiber.Ctx) error {
-	return c.SendString(c.Params("articleID"))
+	var articleData model.Article
+
+	dsn := crud.InitDsn()
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	if err != nil {
+		logrus.Fatalf("database access error: %v", err)
+	}
+	// find articles
+	result := db.First(&articleData, c.Params("articleID"))
+	if result.Error != nil {
+		// if record not exist
+		if result.Error == gorm.ErrRecordNotFound {
+			logrus.Info(result.Error)
+			return c.SendStatus(fiber.StatusNotFound)
+		} else {
+			logrus.Fatal(result.Error)
+		}
+	}
+	logrus.Debugf("%v", articleData)
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"data": articleData,
+	})
 }
