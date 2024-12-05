@@ -57,3 +57,7 @@ func GetArticle(c *fiber.Ctx) error {
 		"data": articleData,
 	})
 }
+
+func GetSingleArticle(c *fiber.Ctx) error {
+	return c.SendString(c.Params("articleID"))
+}
