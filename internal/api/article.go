@@ -49,7 +49,7 @@ func GetArticle(c *fiber.Ctx) error {
 	if err != nil {
 		logrus.Fatalf("database access error: %v", err)
 	}
-	result := db.Find(&articleData)
+	result := db.Order("created_at desc").Find(&articleData)
 	if result.Error != nil {
 		logrus.Fatalf("%v", result.Error)
 	}
