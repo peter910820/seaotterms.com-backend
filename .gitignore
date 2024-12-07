@@ -28,5 +28,5 @@ go.work.sum
 /public/
 /dist/
 
-# test module
-/test/
+# vscode settings
+/.vscode/
