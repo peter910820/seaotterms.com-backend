@@ -28,4 +28,5 @@ func Migration() {
 	}
 	db.AutoMigrate(&Account{})
 	db.AutoMigrate(&Article{})
+	db.AutoMigrate(&Tag{})
 }

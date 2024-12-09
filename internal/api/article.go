@@ -26,7 +26,6 @@ func CreateArticle(data *ArticleData) error {
 	if err != nil {
 		logrus.Fatalf("database access error: %v", err)
 	}
-
 	dataCreate := model.Article{
 		Title:    data.Title,
 		Username: data.Username,
@@ -37,6 +36,29 @@ func CreateArticle(data *ArticleData) error {
 	result := db.Create(&dataCreate)
 	if result.Error != nil {
 		logrus.Fatalf("%v\n", result.Error)
+	}
+
+	// check if tag not exist
+	var existTags []model.Tag
+	db.Where("name IN ?", data.Tags).Find(&existTags)
+
+	existTagsNames := make(map[string]bool)
+	for _, tag := range existTags {
+		existTagsNames[tag.Name] = true
+	}
+
+	var newTags []model.Tag
+	for _, tagName := range data.Tags {
+		if !existTagsNames[tagName] {
+			newTags = append(newTags, model.Tag{Name: tagName})
+		}
+	}
+
+	if len(newTags) > 0 {
+		result := db.Create(&newTags)
+		if result.Error != nil {
+			logrus.Fatalf("%v\n", result.Error)
+		}
 	}
 	return nil
 }

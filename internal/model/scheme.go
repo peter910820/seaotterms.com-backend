@@ -24,3 +24,8 @@ type Article struct {
 	CreatedAt time.Time      // `gorm:"type:timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP"`
 	UpdatedAt time.Time      // `gorm:"type:timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP"`
 }
+
+type Tag struct {
+	ID   uint   `gorm:"primaryKey"`
+	Name string `gorm:"unique;NOT NULL"`
+}
