@@ -40,7 +40,7 @@ func CreateArticle(data *ArticleData) error {
 
 	// check if tag not exist
 	var existTags []model.Tag
-	db.Where("name IN ?", data.Tags).Find(&existTags)
+	db.Where("name = ANY(?)", dataCreate.Tags).Find(&existTags)
 
 	existTagsNames := make(map[string]bool)
 	for _, tag := range existTags {

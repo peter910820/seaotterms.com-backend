@@ -5,6 +5,7 @@ import (
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"net/url"
 
 	"github.com/gofiber/fiber/v2"
 	"seaotterms.com-backend/internal/crud"
@@ -23,7 +24,11 @@ func GetTags(c *fiber.Ctx) error {
 	if err != nil {
 		logrus.Fatalf("database access error: %v", err)
 	}
-	result := db.Table("articles").Select("id", "title").Where("? = ANY(tags)", c.Params("tagName")).Find(&tagData)
+	decodeTag, err := url.QueryUnescape(c.Params("tagName"))
+	if err != nil {
+		logrus.Fatalf("Failed to decode URL: %v", err)
+	}
+	result := db.Table("articles").Select("id", "title").Where("? = ANY(tags)", decodeTag).Find(&tagData)
 	if result.Error != nil {
 		// if record not exist
 		if result.Error == gorm.ErrRecordNotFound {
