@@ -53,6 +53,7 @@ func main() {
 	app.Post("/api/create-article", createArticle)
 	app.Post("/api/articles", api.GetArticle)
 	app.Post("/api/articles/:articleID", api.GetSingleArticle)
+	app.Post("/api/tags/:tagName", api.GetTags)
 
 	app.Post("/api/verify", verifyHandler)
 
