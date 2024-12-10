@@ -3,13 +3,11 @@ package api
 import (
 	"errors"
 
-	"github.com/sirupsen/logrus"
-
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
-
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/session"
+	"github.com/sirupsen/logrus"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 
 	"seaotterms.com-backend/internal/crud"
 	"seaotterms.com-backend/internal/model"

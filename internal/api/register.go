@@ -3,8 +3,8 @@ package api
 import (
 	"errors"
 
+	"github.com/gofiber/fiber/v2"
 	"github.com/sirupsen/logrus"
-
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 
@@ -24,7 +24,31 @@ type RegisterData struct {
 	CheckPassword string `json:"checkPassword"`
 }
 
-func Register(data *RegisterData) error {
+func RegisterHandler(c *fiber.Ctx) error {
+	var data RegisterData
+
+	if err := c.BodyParser(&data); err != nil {
+		logrus.Errorf("%v", err)
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"msg": err.Error(),
+		})
+	}
+	logrus.Debugf("Received data: %+v", data)
+
+	err := register(&data)
+	if err != nil {
+		logrus.Infof("%v", err)
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"msg": err.Error(),
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"msg": "註冊成功",
+	})
+}
+
+func register(data *RegisterData) error {
 	var find []apiAccount
 	dsn := crud.InitDsn()
 
@@ -54,7 +78,8 @@ func Register(data *RegisterData) error {
 	}
 	result = db.Create(&dataCreate)
 	if result.Error != nil {
-		logrus.Fatalf("%v", result.Error)
+		logrus.Errorf("%v", result.Error)
+		return result.Error
 	}
 	return nil
 }

@@ -1,14 +1,13 @@
 package api
 
 import (
+	"github.com/gofiber/fiber/v2"
+	"github.com/lib/pq"
 	"github.com/sirupsen/logrus"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 
-	"github.com/gofiber/fiber/v2"
-
-	"github.com/lib/pq"
 	"seaotterms.com-backend/internal/crud"
 	"seaotterms.com-backend/internal/model"
 )
