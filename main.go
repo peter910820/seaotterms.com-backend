@@ -52,7 +52,7 @@ func main() {
 	app.Post("/api/registerHandler", api.RegisterHandler)
 	app.Post("/api/loginHandler", loginHandler)
 
-	app.Post("/api/create-article", api.CreateArticle)
+	app.Post("/api/create-article", api.ArticleHandler)
 	app.Post("/api/articles", api.GetArticle)
 	app.Post("/api/articles/:articleID", api.GetSingleArticle)
 	app.Post("/api/tags", api.GetTags)

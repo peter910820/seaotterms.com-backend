@@ -25,7 +25,7 @@ func ArticleHandler(c *fiber.Ctx) error {
 	if err := c.BodyParser(&data); err != nil {
 		logrus.Fatalf("%v", err)
 	}
-	err := CreateArticle(&data)
+	err := createArticle(&data)
 	if err != nil {
 		// 500
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
@@ -35,7 +35,7 @@ func ArticleHandler(c *fiber.Ctx) error {
 	return c.SendStatus(fiber.StatusOK)
 }
 
-func CreateArticle(data *ArticleData) error {
+func createArticle(data *ArticleData) error {
 	dsn := crud.InitDsn()
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
