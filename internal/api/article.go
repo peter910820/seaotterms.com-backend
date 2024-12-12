@@ -19,6 +19,22 @@ type ArticleData struct {
 	Content  string         `json:"content"`
 }
 
+func ArticleHandler(c *fiber.Ctx) error {
+	var data ArticleData
+
+	if err := c.BodyParser(&data); err != nil {
+		logrus.Fatalf("%v", err)
+	}
+	err := CreateArticle(&data)
+	if err != nil {
+		// 500
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"msg": err.Error()})
+	}
+
+	return c.SendStatus(fiber.StatusOK)
+}
+
 func CreateArticle(data *ArticleData) error {
 	dsn := crud.InitDsn()
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})

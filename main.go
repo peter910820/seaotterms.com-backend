@@ -52,7 +52,7 @@ func main() {
 	app.Post("/api/registerHandler", api.RegisterHandler)
 	app.Post("/api/loginHandler", loginHandler)
 
-	app.Post("/api/create-article", createArticle)
+	app.Post("/api/create-article", api.CreateArticle)
 	app.Post("/api/articles", api.GetArticle)
 	app.Post("/api/articles/:articleID", api.GetSingleArticle)
 	app.Post("/api/tags", api.GetTags)
@@ -85,22 +85,6 @@ func loginHandler(c *fiber.Ctx) error {
 
 	return c.JSON(fiber.Map{
 		"msg": "登入成功"})
-}
-
-func createArticle(c *fiber.Ctx) error {
-	var data api.ArticleData
-
-	if err := c.BodyParser(&data); err != nil {
-		logrus.Fatalf("%v", err)
-	}
-	err := api.CreateArticle(&data)
-	if err != nil {
-		// 500
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"msg": err.Error()})
-	}
-
-	return c.SendStatus(fiber.StatusOK)
 }
 
 func verifyHandler(c *fiber.Ctx) error {
