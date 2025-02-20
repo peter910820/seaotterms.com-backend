@@ -58,6 +58,8 @@ func main() {
 	app.Post("/api/tags", api.GetTags)
 	app.Post("/api/tags/:tagName", api.GetTag)
 
+	app.Post("/api/galgamerecord", api.GetArticle)
+
 	app.Post("/api/verify", verifyHandler)
 
 	app.Get("*", func(c *fiber.Ctx) error {

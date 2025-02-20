@@ -29,3 +29,16 @@ type Tag struct {
 	ID   uint   `gorm:"primaryKey"`
 	Name string `gorm:"unique;NOT NULL"`
 }
+
+/* --------------------------------- */
+/* --------------------------------- */
+
+// galgame record schema
+type GalgameRecordSchema struct {
+	Brand      string    `gorm:"primaryKey" json:"brand"`           // PK
+	Completed  int       `gorm:"not null" json:"completed"`         // Completed game amount
+	Total      int       `gorm:"not null" json:"total"`             // Total game amount
+	Annotation string    `gorm:"not null" json:"annotation"`        // Annotation
+	InputTime  time.Time `gorm:"autoCreateTime" json:"input_time"`  // InputTime
+	UpdateTime time.Time `gorm:"autoUpdateTime" json:"update_time"` // UpdateTime
+}
