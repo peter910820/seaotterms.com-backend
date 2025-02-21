@@ -5,10 +5,8 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/sirupsen/logrus"
-	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 
-	"seaotterms.com-backend/internal/crud"
 	"seaotterms.com-backend/internal/model"
 )
 
@@ -24,7 +22,7 @@ type RegisterData struct {
 	CheckPassword string `json:"checkPassword"`
 }
 
-func RegisterHandler(c *fiber.Ctx) error {
+func RegisterHandler(c *fiber.Ctx, db *gorm.DB) error {
 	var data RegisterData
 
 	if err := c.BodyParser(&data); err != nil {
@@ -35,7 +33,7 @@ func RegisterHandler(c *fiber.Ctx) error {
 	}
 	logrus.Debugf("Received data: %+v", data)
 
-	err := register(&data)
+	err := register(&data, db)
 	if err != nil {
 		logrus.Infof("%v", err)
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
@@ -48,14 +46,8 @@ func RegisterHandler(c *fiber.Ctx) error {
 	})
 }
 
-func register(data *RegisterData) error {
+func register(data *RegisterData, db *gorm.DB) error {
 	var find []apiAccount
-	dsn := crud.InitDsn()
-
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
-	if err != nil {
-		logrus.Fatalf("database access error: %v", err)
-	}
 
 	result := db.Model(&model.Account{}).Find(&find)
 	if result.Error != nil {

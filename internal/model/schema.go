@@ -6,6 +6,7 @@ import (
 	"github.com/lib/pq"
 )
 
+// blog record schema
 type Account struct {
 	ID        uint      `gorm:"primaryKey"`
 	Username  string    `gorm:"NOT NULL unique"`
@@ -34,7 +35,7 @@ type Tag struct {
 /* --------------------------------- */
 
 // galgame record schema
-type GalgameRecordSchema struct {
+type GalgameRecord struct {
 	Brand      string    `gorm:"primaryKey" json:"brand"`           // PK
 	Completed  int       `gorm:"not null" json:"completed"`         // Completed game amount
 	Total      int       `gorm:"not null" json:"total"`             // Total game amount

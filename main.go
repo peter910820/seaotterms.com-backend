@@ -8,6 +8,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/session"
 	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"
+	"gorm.io/gorm"
 
 	"seaotterms.com-backend/internal/api"
 	"seaotterms.com-backend/internal/middleware"
@@ -19,6 +20,8 @@ var (
 	store = session.New(session.Config{
 		// CookieHTTPOnly: true,
 	})
+	// management database connect
+	dbs = make(map[string]*gorm.DB)
 	// set frontendFolder
 	frontendFolder string = "./public"
 )
@@ -36,7 +39,11 @@ func main() {
 		logrus.Fatalf(".env file load error: %v", err)
 	}
 	if os.Getenv("ENV") == "development" {
-		model.Migration()
+		for i := 0; i <= 1; i++ {
+			dbName, db := model.InitDsn(i)
+			dbs[dbName] = db
+			model.Migration(dbName, dbs[dbName])
+		}
 		frontendFolder = "./dist"
 	}
 
@@ -49,16 +56,31 @@ func main() {
 	// middleware
 	app.Use(middleware.SessionHandler(store))
 	// route
-	app.Post("/api/registerHandler", api.RegisterHandler)
-	app.Post("/api/loginHandler", loginHandler)
+	app.Post("/api/registerHandler", func(c *fiber.Ctx) error {
+		return api.RegisterHandler(c, dbs[os.Getenv("DB_NAME")])
+	})
+	app.Post("/api/loginHandler", func(c *fiber.Ctx) error {
+		return loginHandler(c, dbs[os.Getenv("DB_NAME")])
+	})
 
-	app.Post("/api/create-article", api.ArticleHandler)
-	app.Post("/api/articles", api.GetArticle)
-	app.Post("/api/articles/:articleID", api.GetSingleArticle)
-	app.Post("/api/tags", api.GetTags)
-	app.Post("/api/tags/:tagName", api.GetTag)
+	app.Post("/api/create-article", func(c *fiber.Ctx) error {
+		return api.ArticleHandler(c, dbs[os.Getenv("DB_NAME")])
+	})
+	app.Post("/api/articles", func(c *fiber.Ctx) error {
+		return api.GetArticle(c, dbs[os.Getenv("DB_NAME")])
+	})
+	app.Post("/api/articles/:articleID", func(c *fiber.Ctx) error {
+		return api.GetSingleArticle(c, dbs[os.Getenv("DB_NAME")])
+	})
 
-	app.Post("/api/galgamerecord", api.GetArticle)
+	app.Post("/api/tags", func(c *fiber.Ctx) error {
+		return api.GetTags(c, dbs[os.Getenv("DB_NAME")])
+	})
+	app.Post("/api/tags/:tagName", func(c *fiber.Ctx) error {
+		return api.GetTag(c, dbs[os.Getenv("DB_NAME")])
+	})
+
+	// app.Post("/api/galgamerecord", api.GetArticle)
 
 	app.Post("/api/verify", verifyHandler)
 
@@ -69,7 +91,7 @@ func main() {
 	logrus.Fatal(app.Listen(":3000"))
 }
 
-func loginHandler(c *fiber.Ctx) error {
+func loginHandler(c *fiber.Ctx, db *gorm.DB) error {
 	var data api.LoginData
 
 	if err := c.BodyParser(&data); err != nil {
@@ -77,7 +99,7 @@ func loginHandler(c *fiber.Ctx) error {
 	}
 	logrus.Debugf("login page form data: %v", data)
 
-	err := api.Login(c, store, &data)
+	err := api.Login(c, store, &data, db)
 	if err != nil {
 		logrus.Infof("%v", err)
 		// 401

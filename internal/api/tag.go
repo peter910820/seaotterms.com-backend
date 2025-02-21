@@ -5,11 +5,8 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/sirupsen/logrus"
-
-	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 
-	"seaotterms.com-backend/internal/crud"
 	"seaotterms.com-backend/internal/model"
 )
 
@@ -18,14 +15,9 @@ type TagData struct {
 	Title string
 }
 
-func GetTags(c *fiber.Ctx) error {
+func GetTags(c *fiber.Ctx, db *gorm.DB) error {
 	var tagData []model.Tag
 
-	dsn := crud.InitDsn()
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
-	if err != nil {
-		logrus.Fatalf("database access error: %v", err)
-	}
 	result := db.Order("id desc").Find(&tagData)
 	if result.Error != nil {
 		// if record not exist
@@ -42,14 +34,9 @@ func GetTags(c *fiber.Ctx) error {
 	})
 }
 
-func GetTag(c *fiber.Ctx) error {
+func GetTag(c *fiber.Ctx, db *gorm.DB) error {
 	var tagData []TagData
 
-	dsn := crud.InitDsn()
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
-	if err != nil {
-		logrus.Fatalf("database access error: %v", err)
-	}
 	decodeTag, err := url.QueryUnescape(c.Params("tagName"))
 	if err != nil {
 		logrus.Fatalf("Failed to decode URL: %v", err)

@@ -4,11 +4,8 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/lib/pq"
 	"github.com/sirupsen/logrus"
-
-	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 
-	"seaotterms.com-backend/internal/crud"
 	"seaotterms.com-backend/internal/model"
 )
 
@@ -19,13 +16,13 @@ type ArticleData struct {
 	Content  string         `json:"content"`
 }
 
-func ArticleHandler(c *fiber.Ctx) error {
+func ArticleHandler(c *fiber.Ctx, db *gorm.DB) error {
 	var data ArticleData
 
 	if err := c.BodyParser(&data); err != nil {
 		logrus.Fatalf("%v", err)
 	}
-	err := createArticle(&data)
+	err := createArticle(&data, db)
 	if err != nil {
 		// 500
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
@@ -35,12 +32,7 @@ func ArticleHandler(c *fiber.Ctx) error {
 	return c.SendStatus(fiber.StatusOK)
 }
 
-func createArticle(data *ArticleData) error {
-	dsn := crud.InitDsn()
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
-	if err != nil {
-		logrus.Fatalf("database access error: %v", err)
-	}
+func createArticle(data *ArticleData, db *gorm.DB) error {
 	dataCreate := model.Article{
 		Title:    data.Title,
 		Username: data.Username,
@@ -78,14 +70,9 @@ func createArticle(data *ArticleData) error {
 	return nil
 }
 
-func GetArticle(c *fiber.Ctx) error {
+func GetArticle(c *fiber.Ctx, db *gorm.DB) error {
 	var articleData []model.Article
 
-	dsn := crud.InitDsn()
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
-	if err != nil {
-		logrus.Fatalf("database access error: %v", err)
-	}
 	result := db.Order("created_at desc").Find(&articleData)
 	if result.Error != nil {
 		logrus.Fatalf("%v", result.Error)
@@ -95,14 +82,9 @@ func GetArticle(c *fiber.Ctx) error {
 	})
 }
 
-func GetSingleArticle(c *fiber.Ctx) error {
+func GetSingleArticle(c *fiber.Ctx, db *gorm.DB) error {
 	var articleData model.Article
 
-	dsn := crud.InitDsn()
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
-	if err != nil {
-		logrus.Fatalf("database access error: %v", err)
-	}
 	// find articles
 	result := db.First(&articleData, c.Params("articleID"))
 	if result.Error != nil {

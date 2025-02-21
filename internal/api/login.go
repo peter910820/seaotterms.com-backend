@@ -6,10 +6,8 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/session"
 	"github.com/sirupsen/logrus"
-	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 
-	"seaotterms.com-backend/internal/crud"
 	"seaotterms.com-backend/internal/model"
 )
 
@@ -18,14 +16,9 @@ type LoginData struct {
 	Password string `json:"password"`
 }
 
-func Login(c *fiber.Ctx, store *session.Store, data *LoginData) error {
+func Login(c *fiber.Ctx, store *session.Store, data *LoginData, db *gorm.DB) error {
 	var databaseData []LoginData
 
-	dsn := crud.InitDsn()
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
-	if err != nil {
-		logrus.Fatalf("database access error: %v", err)
-	}
 	r := db.Model(&model.Account{}).Find(&databaseData)
 	if r.Error != nil {
 		logrus.Fatalf("%v\n", r.Error)
