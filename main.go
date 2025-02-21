@@ -39,6 +39,7 @@ func main() {
 		logrus.Fatalf(".env file load error: %v", err)
 	}
 	if os.Getenv("ENV") == "development" {
+		// two database
 		for i := 0; i <= 1; i++ {
 			dbName, db := model.InitDsn(i)
 			dbs[dbName] = db

@@ -6,7 +6,7 @@ import (
 	"github.com/lib/pq"
 )
 
-// blog record schema
+// blog schema
 type Account struct {
 	ID        uint      `gorm:"primaryKey"`
 	Username  string    `gorm:"NOT NULL unique"`
@@ -35,11 +35,14 @@ type Tag struct {
 /* --------------------------------- */
 
 // galgame record schema
-type GalgameRecord struct {
-	Brand      string    `gorm:"primaryKey" json:"brand"`           // PK
-	Completed  int       `gorm:"not null" json:"completed"`         // Completed game amount
-	Total      int       `gorm:"not null" json:"total"`             // Total game amount
-	Annotation string    `gorm:"not null" json:"annotation"`        // Annotation
-	InputTime  time.Time `gorm:"autoCreateTime" json:"input_time"`  // InputTime
-	UpdateTime time.Time `gorm:"autoUpdateTime" json:"update_time"` // UpdateTime
+type BrandRecord struct {
+	Brand       string    `gorm:"primaryKey" json:"brand"`           // PK
+	Completed   int       `gorm:"not null" json:"completed"`         // Completed game amount
+	Total       int       `gorm:"not null" json:"total"`             // Total game amount
+	Annotation  string    `gorm:"not null" json:"annotation"`        // Annotation
+	Dissolution bool      `gorm:"default:false" json:"dissolution"`  // Dissolution
+	InputTime   time.Time `gorm:"autoCreateTime" json:"input_time"`  // InputTime
+	InputName   string    `gorm:"not null" json:"input_name"`        // InputName
+	UpdateTime  time.Time `gorm:"autoUpdateTime" json:"update_time"` // UpdateTime
+	UpdateName  string    `json:"update_name"`                       // UpdateName
 }
