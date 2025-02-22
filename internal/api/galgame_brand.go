@@ -26,7 +26,7 @@ func QueryALlGalgameBrand(c *fiber.Ctx, db *gorm.DB) error {
 		})
 	}
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"data": clintData,
+		"data": data,
 	})
 }
 
