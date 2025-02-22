@@ -81,7 +81,18 @@ func main() {
 		return api.GetTag(c, dbs[os.Getenv("DB_NAME")])
 	})
 
-	// app.Post("/api/galgamerecord", api.GetArticle)
+	/* --------------------------------- */
+	/* --------------------------------- */
+
+	app.Get("/api/galgame-brand", func(c *fiber.Ctx) error {
+		return api.QueryALlGalgameBrand(c, dbs[os.Getenv("DB_NAME2")])
+	})
+	app.Post("/api/galgame-brand", func(c *fiber.Ctx) error {
+		return api.InsertGalgameBrand(c, dbs[os.Getenv("DB_NAME2")])
+	})
+
+	/* --------------------------------- */
+	/* --------------------------------- */
 
 	app.Post("/api/verify", verifyHandler)
 

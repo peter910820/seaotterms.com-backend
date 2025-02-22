@@ -44,5 +44,5 @@ type BrandRecord struct {
 	InputTime   time.Time `gorm:"autoCreateTime" json:"input_time"`  // InputTime
 	InputName   string    `gorm:"not null" json:"input_name"`        // InputName
 	UpdateTime  time.Time `gorm:"autoUpdateTime" json:"update_time"` // UpdateTime
-	UpdateName  string    `json:"update_name"`                       // UpdateName
+	UpdateName  string    `gorm:"not null" json:"update_name"`       // UpdateName
 }
