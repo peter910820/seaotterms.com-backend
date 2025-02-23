@@ -34,7 +34,7 @@ type Tag struct {
 /* --------------------------------- */
 /* --------------------------------- */
 
-// galgame record schema
+// galgame brand record schema
 type BrandRecord struct {
 	Brand       string    `gorm:"primaryKey" json:"brand"`           // PK
 	Completed   int       `gorm:"not null" json:"completed"`         // Completed game amount

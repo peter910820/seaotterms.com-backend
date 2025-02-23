@@ -3,6 +3,7 @@ package api
 import (
 	"fmt"
 	"net/url"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/sirupsen/logrus"
@@ -16,6 +17,16 @@ type BrandRecordForClient struct {
 	Completed   int    `json:"completed"`
 	Total       int    `json:"total"`
 	Dissolution bool   `json:"dissolution"`
+}
+
+type BrandRecordForUpdate struct {
+	Brand       string
+	Completed   int
+	Total       int
+	Annotation  string
+	Dissolution bool
+	UpdateName  string
+	UpdateTime  time.Time
 }
 
 // query all galgamebrand data
@@ -94,5 +105,54 @@ func InsertGalgameBrand(c *fiber.Ctx, db *gorm.DB) error {
 
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"msg": fmt.Sprintf("資料 %s 創建成功", clientData.Brand),
+	})
+}
+
+// update single galgamebrand data
+func UpdateGalgameBrand(c *fiber.Ctx, db *gorm.DB) error {
+	// load client data
+	var clientData BrandRecordForClient
+	if err := c.BodyParser(&clientData); err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"msg": err.Error(),
+		})
+	}
+	// URL decoding
+	brand, err := url.QueryUnescape(c.Params("brand"))
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"msg": err.Error(),
+		})
+	}
+
+	annotation := "待攻略"
+	if clientData.Completed == clientData.Total {
+		annotation = "制霸"
+	}
+
+	// gorm:"autoUpdateTime" can not update, so manual update update_time
+	r := db.Model(&model.BrandRecord{}).Where("brand = ?", brand).
+		Select("brand", "update_name", "completed", "annotation", "total", "dissolution", "update_time").
+		Updates(BrandRecordForUpdate{
+			Brand:       clientData.Brand,
+			Completed:   clientData.Completed,
+			Total:       clientData.Total,
+			Annotation:  annotation,
+			Dissolution: clientData.Dissolution,
+			UpdateName:  clientData.Username,
+			UpdateTime:  time.Now(),
+		})
+	if r.Error != nil {
+		// if record not exist
+		if r.Error == gorm.ErrRecordNotFound {
+			return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+				"msg": r.Error.Error(),
+			})
+		} else {
+			logrus.Fatal(r.Error.Error())
+		}
+	}
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"msg": fmt.Sprintf("資料 %s 更新成功", brand),
 	})
 }

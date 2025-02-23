@@ -93,6 +93,9 @@ func main() {
 	app.Post("/api/galgame-brand", func(c *fiber.Ctx) error {
 		return api.InsertGalgameBrand(c, dbs[os.Getenv("DB_NAME2")])
 	})
+	app.Patch("/api/galgame-brand/:brand", func(c *fiber.Ctx) error {
+		return api.UpdateGalgameBrand(c, dbs[os.Getenv("DB_NAME2")])
+	})
 
 	/* --------------------------------- */
 	/* --------------------------------- */
