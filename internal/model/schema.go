@@ -46,3 +46,15 @@ type BrandRecord struct {
 	UpdateTime  time.Time `gorm:"autoUpdateTime" json:"update_time"` // UpdateTime
 	UpdateName  string    `gorm:"not null" json:"update_name"`       // UpdateName
 }
+
+// galgame game record schema
+type GameRecord struct {
+	Name        string    `gorm:"primaryKey" json:"name"`            // PK
+	Brand       string    `gorm:"not null" json:"brand"`             // Brand
+	ReleaseDate time.Time `gorm:"not null" json:"release_date"`      // ReleaseDate
+	EndTime     time.Time `gorm:"not null" json:"end_time"`          // End time of play
+	InputTime   time.Time `gorm:"autoCreateTime" json:"input_time"`  // InputTime
+	InputName   string    `gorm:"not null" json:"input_name"`        // InputName
+	UpdateTime  time.Time `gorm:"autoUpdateTime" json:"update_time"` // UpdateTime
+	UpdateName  string    `gorm:"not null" json:"update_name"`       // UpdateName
+}
