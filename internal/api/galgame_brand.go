@@ -33,8 +33,9 @@ type BrandRecordForUpdate struct {
 func QueryALlGalgameBrand(c *fiber.Ctx, db *gorm.DB) error {
 	var data []model.BrandRecord
 
-	r := db.Order("brand desc").Find(&data)
+	r := db.Order("brand asc").Find(&data)
 	if r.Error != nil {
+		logrus.Errorf("%s\n", r.Error.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"msg": r.Error.Error(),
 		})
@@ -50,6 +51,7 @@ func QueryGalgameBrand(c *fiber.Ctx, db *gorm.DB) error {
 	// URL decoding
 	brand, err := url.QueryUnescape(c.Params("brand"))
 	if err != nil {
+		logrus.Errorf("%s\n", err.Error())
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"msg": err.Error(),
 		})
@@ -59,6 +61,7 @@ func QueryGalgameBrand(c *fiber.Ctx, db *gorm.DB) error {
 	if r.Error != nil {
 		// if record not exist
 		if r.Error == gorm.ErrRecordNotFound {
+			logrus.Errorf("%s\n", r.Error.Error())
 			return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
 				"msg": r.Error.Error(),
 			})
@@ -66,7 +69,6 @@ func QueryGalgameBrand(c *fiber.Ctx, db *gorm.DB) error {
 			logrus.Fatal(r.Error.Error())
 		}
 	}
-	logrus.Debugf("%v", data)
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"data": data,
 	})
@@ -77,6 +79,7 @@ func InsertGalgameBrand(c *fiber.Ctx, db *gorm.DB) error {
 	// load client data
 	var clientData BrandRecordForClient
 	if err := c.BodyParser(&clientData); err != nil {
+		logrus.Errorf("%s\n", err.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"msg": err.Error(),
 		})
@@ -96,13 +99,14 @@ func InsertGalgameBrand(c *fiber.Ctx, db *gorm.DB) error {
 		InputName:   clientData.Username,
 		UpdateName:  clientData.Username,
 	}
-	result := db.Create(&data)
-	if result.Error != nil {
+	r := db.Create(&data)
+	if r.Error != nil {
+		logrus.Errorf("%s\n", r.Error.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"msg": result.Error.Error(),
+			"msg": r.Error.Error(),
 		})
 	}
-
+	logrus.Infof("資料 %s 創建成功", clientData.Brand)
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"msg": fmt.Sprintf("資料 %s 創建成功", clientData.Brand),
 	})
@@ -113,6 +117,7 @@ func UpdateGalgameBrand(c *fiber.Ctx, db *gorm.DB) error {
 	// load client data
 	var clientData BrandRecordForClient
 	if err := c.BodyParser(&clientData); err != nil {
+		logrus.Errorf("%s\n", err.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"msg": err.Error(),
 		})
@@ -120,6 +125,7 @@ func UpdateGalgameBrand(c *fiber.Ctx, db *gorm.DB) error {
 	// URL decoding
 	brand, err := url.QueryUnescape(c.Params("brand"))
 	if err != nil {
+		logrus.Errorf("%s\n", err.Error())
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"msg": err.Error(),
 		})
@@ -132,7 +138,7 @@ func UpdateGalgameBrand(c *fiber.Ctx, db *gorm.DB) error {
 
 	// gorm:"autoUpdateTime" can not update, so manual update update_time
 	r := db.Model(&model.BrandRecord{}).Where("brand = ?", brand).
-		Select("brand", "update_name", "completed", "annotation", "total", "dissolution", "update_time").
+		Select("brand", "completed", "total", "annotation", "dissolution", "update_name", "update_time").
 		Updates(BrandRecordForUpdate{
 			Brand:       clientData.Brand,
 			Completed:   clientData.Completed,
@@ -145,6 +151,7 @@ func UpdateGalgameBrand(c *fiber.Ctx, db *gorm.DB) error {
 	if r.Error != nil {
 		// if record not exist
 		if r.Error == gorm.ErrRecordNotFound {
+			logrus.Errorf("%s\n", r.Error.Error())
 			return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
 				"msg": r.Error.Error(),
 			})
@@ -152,6 +159,7 @@ func UpdateGalgameBrand(c *fiber.Ctx, db *gorm.DB) error {
 			logrus.Fatal(r.Error.Error())
 		}
 	}
+	logrus.Infof("資料 %s 更新成功", brand)
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"msg": fmt.Sprintf("資料 %s 更新成功", brand),
 	})
