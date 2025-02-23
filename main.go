@@ -87,6 +87,9 @@ func main() {
 	app.Get("/api/galgame-brand", func(c *fiber.Ctx) error {
 		return api.QueryALlGalgameBrand(c, dbs[os.Getenv("DB_NAME2")])
 	})
+	app.Get("/api/galgame-brand/:brand", func(c *fiber.Ctx) error {
+		return api.QueryGalgameBrand(c, dbs[os.Getenv("DB_NAME2")])
+	})
 	app.Post("/api/galgame-brand", func(c *fiber.Ctx) error {
 		return api.InsertGalgameBrand(c, dbs[os.Getenv("DB_NAME2")])
 	})

@@ -2,8 +2,10 @@ package api
 
 import (
 	"fmt"
+	"net/url"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 	"seaotterms.com-backend/internal/model"
 )
@@ -16,13 +18,14 @@ type BrandRecordForClient struct {
 	Dissolution bool   `json:"dissolution"`
 }
 
+// query all galgamebrand data
 func QueryALlGalgameBrand(c *fiber.Ctx, db *gorm.DB) error {
 	var data []model.BrandRecord
 
-	clintData := db.Order("brand desc").Find(&data)
-	if clintData.Error != nil {
+	r := db.Order("brand desc").Find(&data)
+	if r.Error != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"msg": clintData.Error.Error(),
+			"msg": r.Error.Error(),
 		})
 	}
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
@@ -30,6 +33,35 @@ func QueryALlGalgameBrand(c *fiber.Ctx, db *gorm.DB) error {
 	})
 }
 
+// use brand name to query single galgamebrand data
+func QueryGalgameBrand(c *fiber.Ctx, db *gorm.DB) error {
+	var data model.BrandRecord
+	// URL decoding
+	brand, err := url.QueryUnescape(c.Params("brand"))
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"msg": err.Error(),
+		})
+	}
+
+	r := db.Where("brand = ?", brand).First(&data)
+	if r.Error != nil {
+		// if record not exist
+		if r.Error == gorm.ErrRecordNotFound {
+			return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+				"msg": r.Error.Error(),
+			})
+		} else {
+			logrus.Fatal(r.Error.Error())
+		}
+	}
+	logrus.Debugf("%v", data)
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"data": data,
+	})
+}
+
+// insert data to galgamebrand
 func InsertGalgameBrand(c *fiber.Ctx, db *gorm.DB) error {
 	// load client data
 	var clientData BrandRecordForClient
