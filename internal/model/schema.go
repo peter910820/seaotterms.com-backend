@@ -36,26 +36,26 @@ type Tag struct {
 
 // galgame brand record schema
 type BrandRecord struct {
-	Brand       string    `gorm:"primaryKey" json:"brand"`           // PK
-	Completed   int       `gorm:"not null" json:"completed"`         // Completed game amount
-	Total       int       `gorm:"not null" json:"total"`             // Total game amount
-	Annotation  string    `gorm:"not null" json:"annotation"`        // Annotation
-	Dissolution bool      `gorm:"default:false" json:"dissolution"`  // Dissolution
-	InputTime   time.Time `gorm:"autoCreateTime" json:"input_time"`  // InputTime
-	InputName   string    `gorm:"not null" json:"input_name"`        // InputName
-	UpdateTime  time.Time `gorm:"autoUpdateTime" json:"update_time"` // UpdateTime
-	UpdateName  string    `gorm:"not null" json:"update_name"`       // UpdateName
+	Brand       string    `gorm:"primaryKey" json:"brand"`          // PK
+	Completed   int       `gorm:"not null" json:"completed"`        // Completed game amount
+	Total       int       `gorm:"not null" json:"total"`            // Total game amount
+	Annotation  string    `gorm:"not null" json:"annotation"`       // Annotation
+	Dissolution bool      `gorm:"default:false" json:"dissolution"` // Dissolution
+	InputTime   time.Time `gorm:"autoCreateTime" json:"inputTime"`  // InputTime
+	InputName   string    `gorm:"not null" json:"inputName"`        // InputName
+	UpdateTime  time.Time `gorm:"autoUpdateTime" json:"updateTime"` // UpdateTime
+	UpdateName  string    `gorm:"not null" json:"updateName"`       // UpdateName
 }
 
 // galgame game record schema
 type GameRecord struct {
-	Name        string    `gorm:"primaryKey" json:"name"`            // PK
-	Brand       string    `gorm:"not null" json:"brand"`             // Brand
-	ReleaseDate time.Time `gorm:"not null" json:"release_date"`      // ReleaseDate
-	AllAges     bool      `gorm:"not null" json:"all_ages"`          // For all ages
-	EndDate     time.Time `gorm:"not null" json:"end_date"`          // End date of play
-	InputTime   time.Time `gorm:"autoCreateTime" json:"input_time"`  // InputTime
-	InputName   string    `gorm:"not null" json:"input_name"`        // InputName
-	UpdateTime  time.Time `gorm:"autoUpdateTime" json:"update_time"` // UpdateTime
-	UpdateName  string    `gorm:"not null" json:"update_name"`       // UpdateName
+	Name        string    `gorm:"primaryKey" json:"name"`           // PK
+	Brand       string    `gorm:"not null" json:"brand"`            // Brand
+	ReleaseDate time.Time `gorm:"not null" json:"releaseDate"`      // ReleaseDate
+	AllAges     bool      `gorm:"not null" json:"allAges"`          // For all ages
+	EndDate     time.Time `gorm:"not null" json:"endDate"`          // End date of play
+	InputTime   time.Time `gorm:"autoCreateTime" json:"inputTime"`  // InputTime
+	InputName   string    `gorm:"not null" json:"inputName"`        // InputName
+	UpdateTime  time.Time `gorm:"autoUpdateTime" json:"updateTime"` // UpdateTime
+	UpdateName  string    `gorm:"not null" json:"updateName"`       // UpdateName
 }
