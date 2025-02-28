@@ -2,6 +2,7 @@ package api
 
 import (
 	"fmt"
+	"net/url"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -17,6 +18,29 @@ type GameRecordForClient struct {
 	AllAges     bool      `json:"allAges"`
 	EndDate     time.Time `json:"endDate"`
 	Username    string    `json:"username"`
+}
+
+// get all the galgame data for specify brand
+func QueryGalgame(c *fiber.Ctx, db *gorm.DB) error {
+	var data []model.GameRecord
+	// URL decoding
+	brand, err := url.QueryUnescape(c.Params("brand"))
+	if err != nil {
+		logrus.Errorf("%s\n", err.Error())
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"msg": err.Error(),
+		})
+	}
+
+	r := db.Where("brand = ?", brand).Find(&data)
+	if r.Error != nil {
+		logrus.Fatal(r.Error.Error())
+	}
+	// if data not exist, retrun a empty struct
+	logrus.Info("Galgame多筆資料查詢成功")
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"data": data,
+	})
 }
 
 // insert data to galgame

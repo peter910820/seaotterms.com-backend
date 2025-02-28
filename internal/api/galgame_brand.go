@@ -30,7 +30,7 @@ type BrandRecordForUpdate struct {
 }
 
 // query all galgamebrand data
-func QueryALlGalgameBrand(c *fiber.Ctx, db *gorm.DB) error {
+func QueryAllGalgameBrand(c *fiber.Ctx, db *gorm.DB) error {
 	var data []model.BrandRecord
 
 	r := db.Order("brand asc").Find(&data)
@@ -40,6 +40,7 @@ func QueryALlGalgameBrand(c *fiber.Ctx, db *gorm.DB) error {
 			"msg": r.Error.Error(),
 		})
 	}
+	logrus.Info("GalgameBrand全部資料查詢成功")
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"data": data,
 	})
@@ -69,6 +70,7 @@ func QueryGalgameBrand(c *fiber.Ctx, db *gorm.DB) error {
 			logrus.Fatal(r.Error.Error())
 		}
 	}
+	logrus.Info("GalgameBrand單筆資料查詢成功")
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"data": data,
 	})
