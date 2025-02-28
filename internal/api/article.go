@@ -96,8 +96,7 @@ func GetSingleArticle(c *fiber.Ctx, db *gorm.DB) error {
 			logrus.Fatal(result.Error)
 		}
 	}
-	logrus.Debugf("%v", articleData)
-
+	// logrus.Debugf("%v", articleData)
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"data": articleData,
 	})
