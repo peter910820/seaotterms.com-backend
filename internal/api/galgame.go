@@ -20,8 +20,45 @@ type GameRecordForClient struct {
 	Username    string    `json:"username"`
 }
 
-// get all the galgame data for specify brand
+type GameRecordForUpdate struct {
+	ReleaseDate time.Time
+	EndDate     time.Time
+	UpdateName  string
+	UpdateTime  time.Time
+}
+
+// use game name to query single galgame data
 func QueryGalgame(c *fiber.Ctx, db *gorm.DB) error {
+	var data model.GameRecord
+	// URL decoding
+	name, err := url.QueryUnescape(c.Params("name"))
+	if err != nil {
+		logrus.Errorf("%s\n", err.Error())
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"msg": err.Error(),
+		})
+	}
+
+	r := db.Where("name = ?", name).First(&data)
+	if r.Error != nil {
+		// if record not exist
+		if r.Error == gorm.ErrRecordNotFound {
+			logrus.Errorf("%s\n", r.Error.Error())
+			return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+				"msg": r.Error.Error(),
+			})
+		} else {
+			logrus.Fatal(r.Error.Error())
+		}
+	}
+	logrus.Info("Galgame單筆資料查詢成功")
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"data": data,
+	})
+}
+
+// get all the galgame data for specify brand
+func QueryGalgameByBrand(c *fiber.Ctx, db *gorm.DB) error {
 	var data []model.GameRecord
 	// URL decoding
 	brand, err := url.QueryUnescape(c.Params("brand"))
@@ -43,6 +80,51 @@ func QueryGalgame(c *fiber.Ctx, db *gorm.DB) error {
 	})
 }
 
+// update single galgame data (develop)
+func UpdateGalgameDevelop(c *fiber.Ctx, db *gorm.DB) error {
+	// load client data
+	var clientData GameRecordForClient
+	if err := c.BodyParser(&clientData); err != nil {
+		logrus.Errorf("%s\n", err.Error())
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"msg": err.Error(),
+		})
+	}
+	// URL decoding
+	name, err := url.QueryUnescape(c.Params("name"))
+	if err != nil {
+		logrus.Errorf("%s\n", err.Error())
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"msg": err.Error(),
+		})
+	}
+
+	// gorm:"autoUpdateTime" can not update, so manual update update_time
+	r := db.Model(&model.GameRecord{}).Where("name = ?", name).
+		Select("release_date", "end_date", "update_name", "update_time").
+		Updates(GameRecordForUpdate{
+			ReleaseDate: clientData.ReleaseDate,
+			EndDate:     clientData.EndDate,
+			UpdateName:  clientData.Username,
+			UpdateTime:  time.Now(),
+		})
+	if r.Error != nil {
+		// if record not exist
+		if r.Error == gorm.ErrRecordNotFound {
+			logrus.Errorf("%s\n", r.Error.Error())
+			return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+				"msg": r.Error.Error(),
+			})
+		} else {
+			logrus.Fatal(r.Error.Error())
+		}
+	}
+	logrus.Infof("資料 %s 更新成功", name)
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"msg": fmt.Sprintf("資料 %s 更新成功", name),
+	})
+}
+
 // insert data to galgame
 func InsertGalgame(c *fiber.Ctx, db *gorm.DB) error {
 	// load client data
@@ -61,6 +143,7 @@ func InsertGalgame(c *fiber.Ctx, db *gorm.DB) error {
 		AllAges:     clientData.AllAges,
 		EndDate:     clientData.EndDate,
 		InputName:   clientData.Username,
+		UpdateName:  clientData.Username,
 	}
 	r := db.Create(&data)
 	if r.Error != nil {

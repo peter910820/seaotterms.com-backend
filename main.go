@@ -51,7 +51,7 @@ func main() {
 	app := fiber.New()
 
 	app.Use(cors.New(cors.Config{AllowOrigins: "http://localhost:8080",
-		AllowMethods: "POST"}))
+		AllowMethods: "POST, PATCH"}))
 	// static folder
 	app.Static("/", frontendFolder)
 	// middleware
@@ -84,8 +84,14 @@ func main() {
 	/* --------------------------------- */
 	/* --------------------------------- */
 
-	app.Get("/api/galgame/:brand", func(c *fiber.Ctx) error {
+	app.Get("/api/galgame/s/:name", func(c *fiber.Ctx) error {
 		return api.QueryGalgame(c, dbs[os.Getenv("DB_NAME2")])
+	})
+	app.Get("/api/galgame/:brand", func(c *fiber.Ctx) error {
+		return api.QueryGalgameByBrand(c, dbs[os.Getenv("DB_NAME2")])
+	})
+	app.Patch("/api/galgame/develop/:name", func(c *fiber.Ctx) error {
+		return api.UpdateGalgameDevelop(c, dbs[os.Getenv("DB_NAME2")])
 	})
 	app.Post("/api/galgame", func(c *fiber.Ctx) error {
 		return api.InsertGalgame(c, dbs[os.Getenv("DB_NAME2")])
