@@ -10,7 +10,12 @@ import (
 // closure
 func SessionHandler(store *session.Store) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		confirmRoutes := []string{"/create-article", "/api/verify"}
+		confirmRoutes := []string{
+			"/api/verify",
+			"/api/create-article",
+			"/api/galgame",
+			"/api/galgame-brand",
+		}
 		if !isPathIn(c.Path(), confirmRoutes) {
 			return c.Next()
 		}
