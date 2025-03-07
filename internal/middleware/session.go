@@ -5,6 +5,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/session"
+	"slices"
 )
 
 // closure
@@ -19,10 +20,6 @@ func SessionHandler(store *session.Store) fiber.Handler {
 		if !isPathIn(c.Path(), confirmRoutes) {
 			return c.Next()
 		}
-		logrus.Infof("path %s execute middleware", c.Path())
-		logrus.Debugf("store: %v", store)
-		// check session
-		logrus.Info("check session")
 		sess, err := store.Get(c)
 		if err != nil {
 			logrus.Fatal(err)
@@ -33,6 +30,7 @@ func SessionHandler(store *session.Store) fiber.Handler {
 			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 				"msg": "visitors is not logged in"})
 		}
+		logrus.Debugf("store: %v", store)
 		logrus.Infof("%s is access %s", username, c.Path())
 		return c.Next()
 	}
@@ -40,10 +38,5 @@ func SessionHandler(store *session.Store) fiber.Handler {
 }
 
 func isPathIn(path string, confirmRoutes []string) bool {
-	for _, r := range confirmRoutes {
-		if path == r {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(confirmRoutes, path)
 }
