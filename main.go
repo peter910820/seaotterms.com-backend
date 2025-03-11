@@ -40,7 +40,7 @@ func main() {
 	}
 	if os.Getenv("ENV") == "development" {
 		// two database
-		for i := 0; i <= 1; i++ {
+		for i := 0; i <= 2; i++ {
 			dbName, db := model.InitDsn(i)
 			dbs[dbName] = db
 			model.Migration(dbName, dbs[dbName])
