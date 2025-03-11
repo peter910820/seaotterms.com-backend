@@ -1,10 +1,11 @@
 package api
 
 import (
-	"errors"
+	"strings"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/sirupsen/logrus"
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 
 	"seaotterms.com-backend/internal/model"
@@ -15,7 +16,7 @@ type apiAccount struct {
 	Email    string
 }
 
-type RegisterData struct {
+type RegisterDataForClient struct {
 	Username      string `json:"username"`
 	Email         string `json:"email"`
 	Password      string `json:"password"`
@@ -23,55 +24,57 @@ type RegisterData struct {
 }
 
 func RegisterHandler(c *fiber.Ctx, db *gorm.DB) error {
-	var data RegisterData
+	var data RegisterDataForClient
+	var find []apiAccount
 
 	if err := c.BodyParser(&data); err != nil {
-		logrus.Errorf("%v", err)
+		logrus.Error(err)
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"msg": err.Error(),
 		})
 	}
-	logrus.Debugf("Received data: %+v", data)
 
-	err := register(&data, db)
+	result := db.Model(&model.User{}).Find(&find)
+	if result.Error != nil {
+		logrus.Fatalf("%v", result.Error)
+	}
+
+	data.Username = strings.ToLower(data.Username)
+	data.Email = strings.ToLower(data.Email)
+	// check Username & Email exist
+	for _, col := range find {
+		if data.Username == col.Username {
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"msg": "username is exist",
+			})
+		} else if data.Email == col.Email {
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"msg": "email is exist",
+			})
+		}
+	}
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(data.Password), bcrypt.DefaultCost)
 	if err != nil {
-		logrus.Infof("%v", err)
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"msg": err.Error(),
+			"msg": err,
+		})
+	}
+	data.Password = string(hashedPassword)
+	dataCreate := model.User{
+		Username:   data.Username,
+		Password:   data.Password,
+		Email:      data.Email,
+		CreateName: data.Username,
+	}
+	result = db.Create(&dataCreate)
+	if result.Error != nil {
+		logrus.Error(result.Error)
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"msg": result.Error,
 		})
 	}
 
 	return c.JSON(fiber.Map{
 		"msg": "註冊成功",
 	})
-}
-
-func register(data *RegisterData, db *gorm.DB) error {
-	var find []apiAccount
-
-	result := db.Model(&model.Account{}).Find(&find)
-	if result.Error != nil {
-		logrus.Fatalf("%v", result.Error)
-	}
-	// check Username & Email exist
-	for _, col := range find {
-		if data.Username == col.Username {
-			return errors.New("username is exist")
-		} else if data.Email == col.Email {
-			return errors.New("email is exist")
-		} else {
-		}
-	}
-
-	dataCreate := model.Account{
-		Username: data.Username,
-		Password: data.Password,
-		Email:    data.Email,
-	}
-	result = db.Create(&dataCreate)
-	if result.Error != nil {
-		logrus.Errorf("%v", result.Error)
-		return result.Error
-	}
-	return nil
 }

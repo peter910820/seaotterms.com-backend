@@ -58,10 +58,10 @@ func main() {
 	app.Use(middleware.SessionHandler(store))
 	// route
 	app.Post("/api/registerHandler", func(c *fiber.Ctx) error {
-		return api.RegisterHandler(c, dbs[os.Getenv("DB_NAME")])
+		return api.RegisterHandler(c, dbs[os.Getenv("DB_NAME3")])
 	})
 	app.Post("/api/loginHandler", func(c *fiber.Ctx) error {
-		return loginHandler(c, dbs[os.Getenv("DB_NAME")])
+		return loginHandler(c, dbs[os.Getenv("DB_NAME3")])
 	})
 
 	app.Post("/api/create-article", func(c *fiber.Ctx) error {
