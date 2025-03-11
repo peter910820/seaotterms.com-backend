@@ -2,6 +2,7 @@ package api
 
 import (
 	"errors"
+	"strings"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/session"
@@ -25,6 +26,7 @@ func Login(c *fiber.Ctx, store *session.Store, data *LoginData, db *gorm.DB) err
 		logrus.Fatalf("%v\n", r.Error)
 	}
 
+	data.Username = strings.ToLower(data.Username)
 	for _, col := range databaseData {
 		if data.Username == col.Username {
 			logrus.Infof("Username %s try to login", data.Username)
