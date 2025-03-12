@@ -2,6 +2,7 @@ package main
 
 import (
 	"os"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -18,7 +19,8 @@ import (
 var (
 	// init store(session)
 	store = session.New(session.Config{
-		// CookieHTTPOnly: true,
+		Expiration:     12 * time.Hour,
+		CookieHTTPOnly: true,
 	})
 	// management database connect
 	dbs = make(map[string]*gorm.DB)
