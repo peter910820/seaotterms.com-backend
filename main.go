@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"time"
 
@@ -25,29 +26,29 @@ var (
 	// management database connect
 	dbs = make(map[string]*gorm.DB)
 	// set frontendFolder
-	frontendFolder string = "./public"
+	frontendFolder string = "./dist"
 )
 
-func main() {
-	// logrus settings
+func init() {
+	// init logrus settings
 	logrus.SetFormatter(&logrus.TextFormatter{
 		ForceColors:   true,
 		FullTimestamp: true,
 	})
 	logrus.SetLevel(logrus.DebugLevel)
-
+	// init env file
 	err := godotenv.Load()
 	if err != nil {
 		logrus.Fatalf(".env file load error: %v", err)
 	}
-	if os.Getenv("ENV") == "development" {
-		// two database
-		for i := 0; i <= 2; i++ {
-			dbName, db := model.InitDsn(i)
-			dbs[dbName] = db
-			model.Migration(dbName, dbs[dbName])
-		}
-		frontendFolder = "./dist"
+}
+
+func main() {
+	// init migration
+	for i := 0; i <= 2; i++ {
+		dbName, db := model.InitDsn(i)
+		dbs[dbName] = db
+		model.Migration(dbName, dbs[dbName])
 	}
 
 	app := fiber.New()
@@ -63,7 +64,7 @@ func main() {
 		return api.RegisterHandler(c, dbs[os.Getenv("DB_NAME3")])
 	})
 	app.Post("/api/loginHandler", func(c *fiber.Ctx) error {
-		return loginHandler(c, dbs[os.Getenv("DB_NAME3")])
+		return api.Login(c, store, dbs[os.Getenv("DB_NAME3")])
 	})
 
 	app.Post("/api/create-article", func(c *fiber.Ctx) error {
@@ -120,27 +121,7 @@ func main() {
 		return c.SendFile(frontendFolder + "/index.html")
 	})
 
-	logrus.Fatal(app.Listen(":3000"))
-}
-
-func loginHandler(c *fiber.Ctx, db *gorm.DB) error {
-	var data api.LoginData
-
-	if err := c.BodyParser(&data); err != nil {
-		logrus.Fatalf("%v", err)
-	}
-	logrus.Debugf("login page form data: %v", data)
-
-	err := api.Login(c, store, &data, db)
-	if err != nil {
-		logrus.Infof("%v", err)
-		// 401
-		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-			"msg": err.Error()})
-	}
-
-	return c.JSON(fiber.Map{
-		"msg": "登入成功"})
+	logrus.Fatal(app.Listen(fmt.Sprintf(":%s", os.Getenv("PORT"))))
 }
 
 func verifyHandler(c *fiber.Ctx) error {

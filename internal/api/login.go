@@ -1,7 +1,6 @@
 package api
 
 import (
-	"errors"
 	"strings"
 
 	"github.com/gofiber/fiber/v2"
@@ -18,8 +17,13 @@ type LoginData struct {
 	Password string `json:"password"`
 }
 
-func Login(c *fiber.Ctx, store *session.Store, data *LoginData, db *gorm.DB) error {
+func Login(c *fiber.Ctx, store *session.Store, db *gorm.DB) error {
+	var data LoginData
 	var databaseData []LoginData
+
+	if err := c.BodyParser(&data); err != nil {
+		logrus.Fatal(err)
+	}
 
 	r := db.Model(&model.User{}).Find(&databaseData)
 	if r.Error != nil {
@@ -32,8 +36,9 @@ func Login(c *fiber.Ctx, store *session.Store, data *LoginData, db *gorm.DB) err
 			logrus.Infof("Username %s try to login", data.Username)
 			err := bcrypt.CompareHashAndPassword([]byte(col.Password), []byte(data.Password))
 			if err != nil {
-				logrus.Infof("login error, password not correct")
-				return errors.New("login error, password not correct")
+				logrus.Error("login error, password not correct")
+				return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+					"msg": "密碼輸入錯誤"})
 			}
 			// set session
 			sess, err := store.Get(c)
@@ -45,11 +50,13 @@ func Login(c *fiber.Ctx, store *session.Store, data *LoginData, db *gorm.DB) err
 				logrus.Fatal(err)
 			}
 			logrus.Infof("Username %s login success", data.Username)
-			return nil
+			return c.JSON(fiber.Map{
+				"msg": "登入成功"})
 		}
 	}
-	logrus.Infof("user not found")
-	return errors.New("user not found")
+	logrus.Error("user not found")
+	return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+		"msg": "找不到該使用者"})
 }
 
 func CheckPassword(hashedPassword, inputPassword string) bool {
