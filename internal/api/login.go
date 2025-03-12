@@ -1,6 +1,7 @@
 package api
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/gofiber/fiber/v2"
@@ -51,7 +52,7 @@ func Login(c *fiber.Ctx, store *session.Store, db *gorm.DB) error {
 			}
 			logrus.Infof("Username %s login success", data.Username)
 			return c.JSON(fiber.Map{
-				"msg": "登入成功"})
+				"msg": fmt.Sprintf("%s 登入成功", data.Username)})
 		}
 	}
 	logrus.Error("user not found")
@@ -61,5 +62,5 @@ func Login(c *fiber.Ctx, store *session.Store, db *gorm.DB) error {
 
 func CheckPassword(hashedPassword, inputPassword string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(inputPassword))
-	return err == nil // err 為 nil 代表密碼匹配成功
+	return err == nil
 }
