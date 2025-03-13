@@ -20,8 +20,8 @@ import (
 var (
 	// init store(session)
 	store = session.New(session.Config{
-		Expiration:     12 * time.Hour,
-		CookieHTTPOnly: true,
+		Expiration: 24 * time.Hour,
+		// CookieHTTPOnly: true,
 	})
 	// management database connect
 	dbs = make(map[string]*gorm.DB)
