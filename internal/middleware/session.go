@@ -13,7 +13,7 @@ func SessionHandler(store *session.Store) fiber.Handler {
 		c.Method()
 		confirmRoutes := map[string]string{
 			"/api/verify":         "POST",
-			"/api/create-article": "GET",
+			"/api/create-article": "POST",
 			"/api/galgame":        "POST",
 			"/api/galgame-brand":  "POST",
 		}
@@ -30,11 +30,9 @@ func SessionHandler(store *session.Store) fiber.Handler {
 			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 				"msg": "visitors is not logged in"})
 		}
-		logrus.Debugf("store: %v", store)
 		logrus.Infof("%s is access %s", username, c.Path())
 		return c.Next()
 	}
-
 }
 
 func isPathIn(path string, method string, confirmRoutes map[string]string) bool {
