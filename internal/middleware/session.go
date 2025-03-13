@@ -14,8 +14,6 @@ func SessionHandler(store *session.Store) fiber.Handler {
 		confirmRoutes := []string{
 			"/api/verify",
 			"/api/create-article",
-			"/api/galgame",
-			"/api/galgame-brand",
 		}
 		if !isPathIn(c.Path(), confirmRoutes) {
 			return c.Next()
