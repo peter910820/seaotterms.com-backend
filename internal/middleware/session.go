@@ -5,17 +5,19 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/session"
-	"slices"
 )
 
-// closure
+// check user identity
 func SessionHandler(store *session.Store) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		confirmRoutes := []string{
-			"/api/verify",
-			"/api/create-article",
+		c.Method()
+		confirmRoutes := map[string]string{
+			"/api/verify":         "POST",
+			"/api/create-article": "GET",
+			"/api/galgame":        "POST",
+			"/api/galgame-brand":  "POST",
 		}
-		if !isPathIn(c.Path(), confirmRoutes) {
+		if !isPathIn(c.Path(), c.Method(), confirmRoutes) {
 			return c.Next()
 		}
 		sess, err := store.Get(c)
@@ -35,6 +37,11 @@ func SessionHandler(store *session.Store) fiber.Handler {
 
 }
 
-func isPathIn(path string, confirmRoutes []string) bool {
-	return slices.Contains(confirmRoutes, path)
+func isPathIn(path string, method string, confirmRoutes map[string]string) bool {
+	for key, value := range confirmRoutes {
+		if key == path && value == method {
+			return true
+		}
+	}
+	return false
 }
