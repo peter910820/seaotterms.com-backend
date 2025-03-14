@@ -59,14 +59,16 @@ func main() {
 	app.Static("/", frontendFolder)
 	// middleware
 	app.Use(middleware.SessionHandler(store))
+
 	// route
+	/* --------------------------------- */
+	// old route
 	app.Post("/api/registerHandler", func(c *fiber.Ctx) error {
 		return api.RegisterHandler(c, dbs[os.Getenv("DB_NAME3")])
 	})
 	app.Post("/api/loginHandler", func(c *fiber.Ctx) error {
 		return api.Login(c, store, dbs[os.Getenv("DB_NAME3")])
 	})
-
 	app.Post("/api/create-article", func(c *fiber.Ctx) error {
 		return api.ArticleHandler(c, dbs[os.Getenv("DB_NAME")])
 	})
@@ -76,7 +78,6 @@ func main() {
 	app.Post("/api/articles/:articleID", func(c *fiber.Ctx) error {
 		return api.GetSingleArticle(c, dbs[os.Getenv("DB_NAME")])
 	})
-
 	app.Post("/api/tags", func(c *fiber.Ctx) error {
 		return api.GetTags(c, dbs[os.Getenv("DB_NAME")])
 	})
@@ -85,8 +86,7 @@ func main() {
 	})
 
 	/* --------------------------------- */
-	/* --------------------------------- */
-
+	// new route
 	app.Get("/api/galgame/s/:name", func(c *fiber.Ctx) error {
 		return api.QueryGalgame(c, dbs[os.Getenv("DB_NAME2")])
 	})
@@ -113,17 +113,16 @@ func main() {
 	})
 
 	/* --------------------------------- */
+	// verify identity
+	app.Post("/api/verify", func(c *fiber.Ctx) error {
+		return api.Verify(c, store)
+	})
+
 	/* --------------------------------- */
-
-	app.Post("/api/verify", verifyHandler)
-
+	// match all routes
 	app.Get("*", func(c *fiber.Ctx) error {
 		return c.SendFile(frontendFolder + "/index.html")
 	})
 
 	logrus.Fatal(app.Listen(fmt.Sprintf(":%s", os.Getenv("PORT"))))
-}
-
-func verifyHandler(c *fiber.Ctx) error {
-	return c.SendStatus(fiber.StatusOK)
 }

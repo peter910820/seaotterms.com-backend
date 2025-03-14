@@ -10,7 +10,6 @@ import (
 // check user identity
 func SessionHandler(store *session.Store) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		c.Method()
 		confirmRoutes := map[string]string{
 			"/api/verify":         "POST",
 			"/api/create-article": "POST",
@@ -28,8 +27,11 @@ func SessionHandler(store *session.Store) fiber.Handler {
 		if username == nil {
 			logrus.Infof("visitors is not logged in")
 			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-				"msg": "visitors is not logged in"})
+				"msg":      "visitors is not logged in",
+				"username": "",
+			})
 		}
+		c.Locals("username", username)
 		logrus.Infof("%s is access %s", username, c.Path())
 		return c.Next()
 	}
