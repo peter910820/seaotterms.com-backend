@@ -58,7 +58,7 @@ func main() {
 	// static folder
 	app.Static("/", frontendFolder)
 	// middleware
-	app.Use(middleware.SessionHandler(store))
+	app.Use(middleware.SessionHandler(store, dbs[os.Getenv("DB_NAME3")]))
 
 	// route
 	/* --------------------------------- */

@@ -8,6 +8,6 @@ import (
 func Verify(c *fiber.Ctx, store *session.Store) error {
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"msg":      "驗證成功",
-		"username": c.Locals("username"),
+		"userData": c.Locals("userData"),
 	})
 }

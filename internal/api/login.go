@@ -10,6 +10,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 
+	"seaotterms.com-backend/internal/middleware"
 	"seaotterms.com-backend/internal/model"
 )
 
@@ -51,8 +52,28 @@ func Login(c *fiber.Ctx, store *session.Store, db *gorm.DB) error {
 				logrus.Fatal(err)
 			}
 			logrus.Infof("Username %s login success", data.Username)
+
+			var userData model.User
+
+			r := db.Where("username = ?", data.Username).First(&userData)
+			if r.Error != nil {
+				logrus.Fatal(r.Error.Error())
+			}
+
+			data := middleware.UserData{
+				Username:   userData.Username,
+				Email:      userData.Email,
+				Exp:        userData.Exp,
+				Management: userData.Management,
+				CreatedAt:  userData.CreatedAt,
+				UpdatedAt:  userData.UpdatedAt,
+				UpdateName: userData.UpdateName,
+				Avatar:     userData.Avatar,
+			}
 			return c.JSON(fiber.Map{
-				"msg": fmt.Sprintf("%s 登入成功", data.Username)})
+				"msg":      fmt.Sprintf("%s 登入成功", data.Username),
+				"userData": data,
+			})
 		}
 	}
 	logrus.Error("user not found")
