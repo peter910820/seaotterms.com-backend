@@ -61,6 +61,7 @@ func Login(c *fiber.Ctx, store *session.Store, db *gorm.DB) error {
 			}
 
 			data := middleware.UserData{
+				ID:         userData.ID,
 				Username:   userData.Username,
 				Email:      userData.Email,
 				Exp:        userData.Exp,

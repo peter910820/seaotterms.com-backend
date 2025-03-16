@@ -14,6 +14,7 @@ import (
 )
 
 type UserData struct {
+	ID         uint      `json:"id"`
 	Username   string    `json:"username"`
 	Email      string    `json:"email"`
 	Exp        int       `json:"exp"`
@@ -36,6 +37,7 @@ func SessionHandler(store *session.Store, db *gorm.DB) fiber.Handler {
 		confirmRoutesPrefix := map[string]string{
 			"/api/galgame/":       "PATCH",
 			"/api/galgame-brand/": "PATCH",
+			"/api/users/":         "PATCH",
 		}
 		if isPathIn(c.Path(), c.Method(), confirmRoutes) {
 			err := checkLogin(c, store, db)
@@ -98,6 +100,7 @@ func checkLogin(c *fiber.Ctx, store *session.Store, db *gorm.DB) error {
 	}
 
 	data := UserData{
+		ID:         userData.ID,
 		Username:   userData.Username,
 		Email:      userData.Email,
 		Exp:        userData.Exp,
@@ -107,7 +110,6 @@ func checkLogin(c *fiber.Ctx, store *session.Store, db *gorm.DB) error {
 		UpdateName: userData.UpdateName,
 		Avatar:     userData.Avatar,
 	}
-
 	c.Locals("userData", data)
 	logrus.Infof("%s is access %s", username, c.Path())
 	return nil

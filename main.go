@@ -84,7 +84,6 @@ func main() {
 	app.Post("/api/tags/:tagName", func(c *fiber.Ctx) error {
 		return api.GetTag(c, dbs[os.Getenv("DB_NAME")])
 	})
-
 	/* --------------------------------- */
 	// new route
 	app.Get("/api/galgame/s/:name", func(c *fiber.Ctx) error {
@@ -110,6 +109,10 @@ func main() {
 	})
 	app.Patch("/api/galgame-brand/:brand", func(c *fiber.Ctx) error {
 		return api.UpdateGalgameBrand(c, dbs[os.Getenv("DB_NAME2")])
+	})
+	/* --------------------------------- */
+	app.Patch("/api/users/:id", func(c *fiber.Ctx) error {
+		return api.UpdateUser(c, dbs[os.Getenv("DB_NAME3")])
 	})
 
 	/* --------------------------------- */
