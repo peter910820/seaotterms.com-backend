@@ -48,14 +48,13 @@ func UpdateUser(c *fiber.Ctx, db *gorm.DB) error {
 		})
 	}
 	// check if form id equal route id
-	u64, err := strconv.ParseUint(id, 10, 64)
+	u, err := strconv.ParseUint(id, 10, 64)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"msg": err.Error(),
 		})
 	}
-	u := uint(u64)
-	if u != clientData.ID {
+	if u != uint64(clientData.ID) {
 		logrus.Error("ID比對失敗")
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"msg": "ID比對失敗",

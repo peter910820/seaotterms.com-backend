@@ -25,6 +25,7 @@ func Migration(dbName string, db *gorm.DB) {
 		db.AutoMigrate(&GameRecord{})
 	case os.Getenv("DB_NAME3"):
 		db.AutoMigrate(&User{})
+		db.AutoMigrate(&Todo{})
 	default:
 		logrus.Fatal("error in migration function")
 	}

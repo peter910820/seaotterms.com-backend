@@ -34,6 +34,8 @@ type Tag struct {
 /* --------------------------------- */
 /* --------------------------------- */
 
+// A00_Blog
+
 type User struct {
 	ID         uint      `gorm:"primaryKey" json:"id"`
 	Username   string    `gorm:"NOT NULL unique" json:"username"`
@@ -48,8 +50,22 @@ type User struct {
 	UpdateName string    `json:"updateName"`
 }
 
+type Todo struct {
+	ID         uint      `gorm:"primaryKey" json:"id"`
+	Owner      string    `gorm:"NOT NULL" json:"owner"`
+	Title      string    `gorm:"NOT NULL" json:"title"`
+	Content    string    `json:"content"`
+	Status     uint      `gorm:"NOT NULL" json:"status"`
+	CreatedAt  time.Time `gorm:"autoCreateTime" json:"createdAt"`
+	CreateName string    `gorm:"NOT NULL" json:"createName"`
+	UpdatedAt  time.Time `gorm:"autoUpdateTime" json:"updatedAt"`
+	UpdateName string    `json:"updateName"`
+}
+
 /* --------------------------------- */
 /* --------------------------------- */
+
+// A00_Galgame
 
 // galgame brand record schema
 type BrandRecord struct {

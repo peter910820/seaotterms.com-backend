@@ -114,7 +114,10 @@ func main() {
 	app.Patch("/api/users/:id", func(c *fiber.Ctx) error {
 		return api.UpdateUser(c, dbs[os.Getenv("DB_NAME3")])
 	})
-
+	/* --------------------------------- */
+	app.Get("/api/todos/:owner", func(c *fiber.Ctx) error {
+		return api.QueryTodoByOwner(c, dbs[os.Getenv("DB_NAME3")])
+	})
 	/* --------------------------------- */
 	// verify identity
 	app.Post("/api/verify", func(c *fiber.Ctx) error {
