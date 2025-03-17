@@ -37,7 +37,30 @@ func QueryTodoByOwner(c *fiber.Ctx, db *gorm.DB) error {
 	}
 	logrus.Infof("查詢%s的Todo資料成功", owner)
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"msg":  fmt.Sprintf("查詢%s的Todo資料成功", owner),
+		"msg":  fmt.Sprintf("查詢 %s 的Todo資料成功", owner),
 		"data": data,
+	})
+}
+
+func InsertTodo(c *fiber.Ctx, db *gorm.DB) error {
+	// load client data
+	clientData := model.Todo{}
+	if err := c.BodyParser(&clientData); err != nil {
+		logrus.Error(err.Error())
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"msg": err.Error(),
+		})
+	}
+
+	r := db.Create(&clientData)
+	if r.Error != nil {
+		logrus.Errorf("%s\n", r.Error.Error())
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"msg": r.Error.Error(),
+		})
+	}
+	logrus.Infof("資料 %s 創建成功", clientData.Title)
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"msg": fmt.Sprintf("資料 %s 創建成功", clientData.Title),
 	})
 }

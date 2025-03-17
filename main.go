@@ -118,6 +118,9 @@ func main() {
 	app.Get("/api/todos/:owner", func(c *fiber.Ctx) error {
 		return api.QueryTodoByOwner(c, dbs[os.Getenv("DB_NAME3")])
 	})
+	app.Post("/api/todos", func(c *fiber.Ctx) error {
+		return api.InsertTodo(c, dbs[os.Getenv("DB_NAME3")])
+	})
 	/* --------------------------------- */
 	// verify identity
 	app.Post("/api/verify", func(c *fiber.Ctx) error {
