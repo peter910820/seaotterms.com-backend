@@ -53,8 +53,8 @@ type User struct {
 type Todo struct {
 	ID         uint      `gorm:"primaryKey" json:"id"`
 	Owner      string    `gorm:"NOT NULL" json:"owner"`
+	Topic      string    `gorm:"NOT NULL" json:"topic"`
 	Title      string    `gorm:"NOT NULL" json:"title"`
-	Content    string    `json:"content"`
 	Status     uint      `gorm:"NOT NULL" json:"status"`
 	CreatedAt  time.Time `gorm:"autoCreateTime" json:"createdAt"`
 	CreateName string    `gorm:"NOT NULL" json:"createName"`
