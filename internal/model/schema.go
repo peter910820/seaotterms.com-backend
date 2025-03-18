@@ -56,9 +56,16 @@ type Todo struct {
 	Topic      string    `gorm:"NOT NULL" json:"topic"`
 	Title      string    `gorm:"NOT NULL" json:"title"`
 	Status     uint      `gorm:"NOT NULL" json:"status"`
+	Deadline   time.Time `json:"deadline"`
 	CreatedAt  time.Time `gorm:"autoCreateTime" json:"createdAt"`
 	CreateName string    `gorm:"NOT NULL" json:"createName"`
 	UpdatedAt  time.Time `gorm:"autoUpdateTime" json:"updatedAt"`
+	UpdateName string    `json:"updateName"`
+}
+
+type TodoTopic struct {
+	TopicName  string    `gorm:"primaryKey" json:"topicName"`
+	UpdatedAt  time.Time `gorm:"autoCreateTime" json:"updatedAt"`
 	UpdateName string    `json:"updateName"`
 }
 
