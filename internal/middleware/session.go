@@ -114,3 +114,39 @@ func checkLogin(c *fiber.Ctx, store *session.Store, db *gorm.DB) error {
 	logrus.Infof("%s is access %s", username, c.Path())
 	return nil
 }
+
+func AuthenticationManagementHandler(store *session.Store, db *gorm.DB) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		confirmRoutes := map[string]string{
+			"/api/authentication": "POST",
+		}
+
+		if isPathIn(c.Path(), c.Method(), confirmRoutes) {
+			sess, err := store.Get(c)
+			if err != nil {
+				logrus.Fatal(err)
+			}
+			username := sess.Get("username")
+			if username == nil {
+				logrus.Error("visitors is not logged in")
+				return errors.New("visitors is not logged in")
+			}
+
+			userData := model.User{}
+
+			r := db.Where("username = ?", username).First(&userData)
+			if r.Error != nil {
+				logrus.Fatal(r.Error.Error())
+			}
+
+			if !userData.Management {
+				return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+					"msg": "你沒有權限造訪此頁面",
+				})
+			}
+			return c.Next()
+		}
+
+		return c.Next()
+	}
+}
