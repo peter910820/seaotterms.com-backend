@@ -33,7 +33,7 @@ func QueryGalgame(c *fiber.Ctx, db *gorm.DB) error {
 	// URL decoding
 	name, err := url.QueryUnescape(c.Params("name"))
 	if err != nil {
-		logrus.Errorf("%s\n", err.Error())
+		logrus.Error(err)
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"msg": err.Error(),
 		})
@@ -43,7 +43,7 @@ func QueryGalgame(c *fiber.Ctx, db *gorm.DB) error {
 	if r.Error != nil {
 		// if record not exist
 		if r.Error == gorm.ErrRecordNotFound {
-			logrus.Errorf("%s\n", r.Error.Error())
+			logrus.Error(r.Error)
 			return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
 				"msg": r.Error.Error(),
 			})
@@ -63,7 +63,7 @@ func QueryGalgameByBrand(c *fiber.Ctx, db *gorm.DB) error {
 	// URL decoding
 	brand, err := url.QueryUnescape(c.Params("brand"))
 	if err != nil {
-		logrus.Errorf("%s\n", err.Error())
+		logrus.Error(err)
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"msg": err.Error(),
 		})
@@ -85,7 +85,7 @@ func UpdateGalgameDevelop(c *fiber.Ctx, db *gorm.DB) error {
 	// load client data
 	var clientData GameRecordForClient
 	if err := c.BodyParser(&clientData); err != nil {
-		logrus.Errorf("%s\n", err.Error())
+		logrus.Error(err)
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"msg": err.Error(),
 		})
@@ -93,7 +93,7 @@ func UpdateGalgameDevelop(c *fiber.Ctx, db *gorm.DB) error {
 	// URL decoding
 	name, err := url.QueryUnescape(c.Params("name"))
 	if err != nil {
-		logrus.Errorf("%s\n", err.Error())
+		logrus.Error(err)
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"msg": err.Error(),
 		})
@@ -111,7 +111,7 @@ func UpdateGalgameDevelop(c *fiber.Ctx, db *gorm.DB) error {
 	if r.Error != nil {
 		// if record not exist
 		if r.Error == gorm.ErrRecordNotFound {
-			logrus.Errorf("%s\n", r.Error.Error())
+			logrus.Error(r.Error)
 			return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
 				"msg": r.Error.Error(),
 			})
@@ -130,7 +130,7 @@ func InsertGalgame(c *fiber.Ctx, db *gorm.DB) error {
 	// load client data
 	var clientData GameRecordForClient
 	if err := c.BodyParser(&clientData); err != nil {
-		logrus.Errorf("%s\n", err.Error())
+		logrus.Error(err)
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"msg": err.Error(),
 		})
@@ -147,7 +147,7 @@ func InsertGalgame(c *fiber.Ctx, db *gorm.DB) error {
 	}
 	r := db.Create(&data)
 	if r.Error != nil {
-		logrus.Errorf("%s\n", r.Error.Error())
+		logrus.Error(r.Error)
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"msg": r.Error.Error(),
 		})
@@ -164,7 +164,7 @@ func InsertGalgame(c *fiber.Ctx, db *gorm.DB) error {
 	if r.Error != nil {
 		// if record not exist
 		if r.Error == gorm.ErrRecordNotFound {
-			logrus.Errorf("%s\n", r.Error.Error())
+			logrus.Error(r.Error)
 			return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
 				"msg": r.Error.Error(),
 			})
@@ -190,7 +190,7 @@ func InsertGalgame(c *fiber.Ctx, db *gorm.DB) error {
 	if r.Error != nil {
 		// if record not exist
 		if r.Error == gorm.ErrRecordNotFound {
-			logrus.Errorf("%s\n", r.Error.Error())
+			logrus.Error(r.Error)
 			return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
 				"msg": r.Error.Error(),
 			})
