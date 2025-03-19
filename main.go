@@ -123,6 +123,10 @@ func main() {
 		return api.InsertTodo(c, dbs[os.Getenv("DB_NAME3")])
 	})
 	/* --------------------------------- */
+	app.Get("/api/todo_topics", func(c *fiber.Ctx) error {
+		return api.QueryTodoTopic(c, dbs[os.Getenv("DB_NAME3")])
+	})
+	/* --------------------------------- */
 	// verify identity
 	app.Post("/api/verify", func(c *fiber.Ctx) error {
 		return api.Verify(c, store)
