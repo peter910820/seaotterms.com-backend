@@ -3,6 +3,7 @@ package api
 import (
 	"fmt"
 	"net/url"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/sirupsen/logrus"
@@ -10,6 +11,17 @@ import (
 
 	"seaotterms.com-backend/internal/model"
 )
+
+type todoDataForInsert struct {
+	ID         uint       `gorm:"primaryKey" json:"id"`
+	Owner      string     `gorm:"NOT NULL" json:"owner"`
+	Topic      string     `gorm:"NOT NULL" json:"topic"`
+	Title      string     `gorm:"NOT NULL" json:"title"`
+	Status     uint       `gorm:"NOT NULL" json:"status"`
+	Deadline   *time.Time `json:"deadline"`
+	CreateName string     `gorm:"NOT NULL" json:"createName"`
+	UpdateName string     `json:"updateName"`
+}
 
 func QueryTodoByOwner(c *fiber.Ctx, db *gorm.DB) error {
 	// URL decoding
@@ -21,7 +33,7 @@ func QueryTodoByOwner(c *fiber.Ctx, db *gorm.DB) error {
 			"msg": err.Error(),
 		})
 	}
-	data := []model.Todo{}
+	data := []todoDataForInsert{}
 	r := db.Where("owner = ?", owner).Find(&data)
 	if r.Error != nil {
 		// if record not exist
@@ -51,8 +63,17 @@ func InsertTodo(c *fiber.Ctx, db *gorm.DB) error {
 			"msg": err.Error(),
 		})
 	}
-
-	r := db.Create(&clientData)
+	data := model.Todo{
+		ID:         clientData.ID,
+		Owner:      clientData.Owner,
+		Topic:      clientData.Topic,
+		Title:      clientData.Title,
+		Status:     clientData.Status,
+		Deadline:   clientData.Deadline,
+		CreateName: clientData.CreateName,
+		UpdateName: clientData.UpdateName,
+	}
+	r := db.Create(&data)
 	if r.Error != nil {
 		logrus.Errorf("%s\n", r.Error.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
