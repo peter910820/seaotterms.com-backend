@@ -122,6 +122,9 @@ func main() {
 	app.Post("/api/todos", func(c *fiber.Ctx) error {
 		return api.InsertTodo(c, dbs[os.Getenv("DB_NAME3")])
 	})
+	app.Post("/api/switch_todo/:id", func(c *fiber.Ctx) error {
+		return api.SwitchTodo(c, dbs[os.Getenv("DB_NAME3")])
+	})
 	/* --------------------------------- */
 	app.Get("/api/todo_topics", func(c *fiber.Ctx) error {
 		return api.QueryTodoTopic(c, dbs[os.Getenv("DB_NAME3")])

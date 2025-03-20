@@ -23,6 +23,11 @@ type todoDataForInsert struct {
 	UpdateName string     `json:"updateName"`
 }
 
+type todoSwitch struct {
+	Status     uint   `gorm:"NOT NULL" json:"status"`
+	UpdateName string `json:"updateName"`
+}
+
 func QueryTodoByOwner(c *fiber.Ctx, db *gorm.DB) error {
 	// URL decoding
 	owner, err := url.QueryUnescape(c.Params("owner"))
@@ -33,8 +38,8 @@ func QueryTodoByOwner(c *fiber.Ctx, db *gorm.DB) error {
 			"msg": err.Error(),
 		})
 	}
-	data := []todoDataForInsert{}
-	r := db.Where("owner = ?", owner).Find(&data)
+	data := []model.Todo{}
+	r := db.Where("owner = ?", owner).Order("created_at DESC").Find(&data)
 	if r.Error != nil {
 		// if record not exist
 		if r.Error == gorm.ErrRecordNotFound {
@@ -83,5 +88,48 @@ func InsertTodo(c *fiber.Ctx, db *gorm.DB) error {
 	logrus.Infof("資料 %s 創建成功", clientData.Title)
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"msg": fmt.Sprintf("資料 %s 創建成功", clientData.Title),
+	})
+}
+
+func SwitchTodo(c *fiber.Ctx, db *gorm.DB) error {
+	data := model.Todo{}
+	result := db.First(&data, c.Params("id"))
+	if result.Error != nil {
+		// if record not exist
+		if result.Error == gorm.ErrRecordNotFound {
+			logrus.Info(result.Error)
+			return c.SendStatus(fiber.StatusNotFound)
+		} else {
+			logrus.Fatal(result.Error)
+		}
+	}
+	status := uint(0)
+	if data.Status == 0 {
+		status = 3
+	} else if data.Status == 3 {
+		status = 0
+	} else {
+		logrus.Fatal("切換API出問題了")
+	}
+	r := db.Model(&model.Todo{}).Where("id = ?", c.Params("id")).
+		Select("status", "update_name").
+		Updates(todoSwitch{
+			Status:     status,
+			UpdateName: "root",
+		})
+	if r.Error != nil {
+		// if record not exist
+		if r.Error == gorm.ErrRecordNotFound {
+			logrus.Errorf("%s\n", r.Error.Error())
+			return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+				"msg": r.Error.Error(),
+			})
+		} else {
+			logrus.Fatal(r.Error.Error())
+		}
+	}
+	logrus.Infof("Todo資料 %s 切換成功", c.Params("id"))
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"msg": fmt.Sprintf("Todo資料 %s 切換成功", c.Params("id")),
 	})
 }
