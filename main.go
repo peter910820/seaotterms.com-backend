@@ -129,10 +129,10 @@ func main() {
 		return api.DeleteTodo(c, dbs[os.Getenv("DB_NAME3")])
 	})
 	/* --------------------------------- */
-	app.Get("/api/todo_topics", func(c *fiber.Ctx) error {
+	app.Get("/api/todo-topics", func(c *fiber.Ctx) error {
 		return api.QueryTodoTopic(c, dbs[os.Getenv("DB_NAME3")])
 	})
-	app.Post("/api/todo_topics", func(c *fiber.Ctx) error {
+	app.Post("/api/todo-topics", func(c *fiber.Ctx) error {
 		return api.InsertTodoTopic(c, dbs[os.Getenv("DB_NAME3")])
 	})
 	/* --------------------------------- */

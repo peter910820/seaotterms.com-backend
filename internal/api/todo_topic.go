@@ -16,8 +16,9 @@ type todoTopicForInsert struct {
 }
 
 func QueryTodoTopic(c *fiber.Ctx, db *gorm.DB) error {
+	owner := c.Query("username")
 	data := []model.TodoTopic{}
-	r := db.Order("topic_name asc").Find(&data)
+	r := db.Where("topic_owner = ?", owner).Order("topic_name asc").Find(&data)
 	if r.Error != nil {
 		// if record not exist
 		if r.Error == gorm.ErrRecordNotFound {

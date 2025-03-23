@@ -65,7 +65,7 @@ type Todo struct {
 
 type TodoTopic struct {
 	TopicName  string    `gorm:"primaryKey" json:"topicName"`
-	TopicOwner string    `gorm:"NOT NULL; default:'common'" json:"topicOwner"`
+	TopicOwner string    `gorm:"primaryKey; default:'root'" json:"topicOwner"`
 	UpdatedAt  time.Time `gorm:"autoCreateTime" json:"updatedAt"`
 	UpdateName string    `json:"updateName"`
 }

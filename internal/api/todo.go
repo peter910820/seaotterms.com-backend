@@ -70,7 +70,7 @@ func InsertTodo(c *fiber.Ctx, db *gorm.DB) error {
 	}
 	r := db.Create(&data)
 	if r.Error != nil {
-		logrus.Errorf("%s\n", r.Error.Error())
+		logrus.Error(r.Error)
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"msg": r.Error.Error(),
 		})

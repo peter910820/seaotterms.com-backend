@@ -63,6 +63,7 @@ func SessionHandler(store *session.Store, db *gorm.DB) fiber.Handler {
 	}
 }
 
+// 目前沒用到
 func AuthenticationManagementHandler(store *session.Store, db *gorm.DB) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		confirmRoutes := map[string]string{
