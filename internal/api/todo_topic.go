@@ -2,6 +2,7 @@ package api
 
 import (
 	"fmt"
+	"net/url"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/sirupsen/logrus"
@@ -16,9 +17,17 @@ type todoTopicForInsert struct {
 }
 
 func QueryTodoTopic(c *fiber.Ctx, db *gorm.DB) error {
-	owner := c.Query("username")
+	// URL decoding
+	owner, err := url.QueryUnescape(c.Params("owner"))
+	if err != nil {
+		logrus.Error(err)
+		// return 400
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"msg": err.Error(),
+		})
+	}
 	data := []model.TodoTopic{}
-	r := db.Where("topic_owner = ?", owner).Order("topic_name asc").Find(&data)
+	r := db.Where("topic_owner = ?", owner).Order("topic_name DESC").Find(&data)
 	if r.Error != nil {
 		// if record not exist
 		if r.Error == gorm.ErrRecordNotFound {
