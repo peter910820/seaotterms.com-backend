@@ -3,6 +3,7 @@ package api
 import (
 	"fmt"
 	"net/url"
+	"strings"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -58,6 +59,17 @@ func InsertTodo(c *fiber.Ctx, db *gorm.DB) error {
 			"msg": err.Error(),
 		})
 	}
+	// handle topic
+	lastSlashIndex := strings.LastIndex(clientData.Topic, "/")
+	if lastSlashIndex != -1 {
+		clientData.Topic = clientData.Topic[:lastSlashIndex]
+	} else {
+		logrus.Error("topic value has error")
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"msg": "topic value has error",
+		})
+	}
+
 	data := model.Todo{
 		ID:         clientData.ID,
 		Owner:      clientData.Owner,
