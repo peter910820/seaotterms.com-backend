@@ -125,6 +125,9 @@ func main() {
 	app.Patch("/api/todos/:id", func(c *fiber.Ctx) error {
 		return api.UpdateTodoStatus(c, dbs[os.Getenv("DB_NAME3")])
 	})
+	app.Delete("/api/todos/:id", func(c *fiber.Ctx) error {
+		return api.DeleteTodo(c, dbs[os.Getenv("DB_NAME3")])
+	})
 	/* --------------------------------- */
 	app.Get("/api/todo_topics", func(c *fiber.Ctx) error {
 		return api.QueryTodoTopic(c, dbs[os.Getenv("DB_NAME3")])

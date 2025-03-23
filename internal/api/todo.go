@@ -112,3 +112,24 @@ func UpdateTodoStatus(c *fiber.Ctx, db *gorm.DB) error {
 		"msg": fmt.Sprintf("Todo %s 更新成功", c.Params("id")),
 	})
 }
+
+func DeleteTodo(c *fiber.Ctx, db *gorm.DB) error {
+	r := db.Where("id = ?", c.Params("id")).Delete(&model.Todo{})
+	if r.Error != nil {
+		logrus.Error(r.Error)
+		// if record not exist
+		if r.Error == gorm.ErrRecordNotFound {
+			return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+				"msg": r.Error.Error(),
+			})
+		} else {
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"msg": r.Error.Error(),
+			})
+		}
+	}
+	logrus.Infof("Todo %s 刪除成功", c.Params("id"))
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"msg": fmt.Sprintf("Todo %s 刪除成功", c.Params("id")),
+	})
+}
