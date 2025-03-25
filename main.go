@@ -57,9 +57,10 @@ func main() {
 		AllowMethods: "POST, PATCH"}))
 	// static folder
 	app.Static("/", frontendFolder)
+	// route group
+	authentication := app.Group("/api", middleware.AuthenticationManagementHandler(store, dbs[os.Getenv("DB_NAME3")]))
 	// middleware
 	app.Use(middleware.SessionHandler(store, dbs[os.Getenv("DB_NAME3")]))
-	app.Use(middleware.AuthenticationManagementHandler(store, dbs[os.Getenv("DB_NAME3")]))
 
 	// route
 	/* --------------------------------- */
@@ -140,7 +141,7 @@ func main() {
 	app.Post("/api/verify", func(c *fiber.Ctx) error {
 		return api.Verify(c, store)
 	})
-	app.Post("/api/authentication", func(c *fiber.Ctx) error {
+	authentication.Post("/authentication", func(c *fiber.Ctx) error {
 		return api.AuthenticationManagementHandler(c, store)
 	})
 
