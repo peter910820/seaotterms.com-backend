@@ -58,7 +58,9 @@ func main() {
 	// static folder
 	app.Static("/", frontendFolder)
 	// route group
-	authentication := app.Group("/api", middleware.AuthenticationManagementHandler(store, dbs[os.Getenv("DB_NAME3")]))
+	apiGroup := app.Group("/api")
+	galgameGroup := apiGroup.Group("/galgame")
+	galgameBrandGroup := apiGroup.Group("/galgame-brand")
 	// middleware
 	app.Use(middleware.SessionHandler(store, dbs[os.Getenv("DB_NAME3")]))
 
@@ -88,28 +90,29 @@ func main() {
 	})
 	/* --------------------------------- */
 	// new route
-	app.Get("/api/galgame/s/:name", func(c *fiber.Ctx) error {
+	galgameGroup.Get("/s/:name", func(c *fiber.Ctx) error {
 		return api.QueryGalgame(c, dbs[os.Getenv("DB_NAME2")])
 	})
-	app.Get("/api/galgame/:brand", func(c *fiber.Ctx) error {
+	galgameGroup.Get("/:brand", func(c *fiber.Ctx) error {
 		return api.QueryGalgameByBrand(c, dbs[os.Getenv("DB_NAME2")])
 	})
-	app.Patch("/api/galgame/develop/:name", func(c *fiber.Ctx) error {
+	galgameGroup.Patch("/develop/:name", func(c *fiber.Ctx) error {
 		return api.UpdateGalgameDevelop(c, dbs[os.Getenv("DB_NAME2")])
 	})
-	app.Post("/api/galgame", func(c *fiber.Ctx) error {
+	galgameGroup.Post("/", func(c *fiber.Ctx) error {
 		return api.InsertGalgame(c, dbs[os.Getenv("DB_NAME2")])
 	})
-	app.Get("/api/galgame-brand", func(c *fiber.Ctx) error {
+
+	galgameBrandGroup.Get("/", middleware.CheckSession(store, dbs[os.Getenv("DB_NAME3")]), func(c *fiber.Ctx) error {
 		return api.QueryAllGalgameBrand(c, dbs[os.Getenv("DB_NAME2")])
 	})
-	app.Get("/api/galgame-brand/:brand", func(c *fiber.Ctx) error {
+	galgameBrandGroup.Get("/:brand", func(c *fiber.Ctx) error {
 		return api.QueryGalgameBrand(c, dbs[os.Getenv("DB_NAME2")])
 	})
-	app.Post("/api/galgame-brand", func(c *fiber.Ctx) error {
+	galgameBrandGroup.Post("/", func(c *fiber.Ctx) error {
 		return api.InsertGalgameBrand(c, dbs[os.Getenv("DB_NAME2")])
 	})
-	app.Patch("/api/galgame-brand/:brand", func(c *fiber.Ctx) error {
+	galgameBrandGroup.Patch("/:brand", func(c *fiber.Ctx) error {
 		return api.UpdateGalgameBrand(c, dbs[os.Getenv("DB_NAME2")])
 	})
 	/* --------------------------------- */
@@ -140,9 +143,6 @@ func main() {
 	// verify identity
 	app.Post("/api/verify", func(c *fiber.Ctx) error {
 		return api.Verify(c, store)
-	})
-	authentication.Post("/authentication", func(c *fiber.Ctx) error {
-		return api.AuthenticationManagementHandler(c, store)
 	})
 
 	/* --------------------------------- */
