@@ -21,7 +21,7 @@ import (
 var (
 	// init store(session)
 	store = session.New(session.Config{
-		Expiration: 24 * time.Hour,
+		Expiration: 7 * 24 * time.Hour,
 		// CookieHTTPOnly: true,
 	})
 	// management database connect
@@ -62,7 +62,7 @@ func main() {
 
 	// route group
 	apiGroup := app.Group("/api") // main api route group
-
+	// register router
 	router.ArticleRouter(apiGroup, store, dbs)
 	router.GalgameRouter(apiGroup, store, dbs)
 	router.GalgameBrandRouter(apiGroup, store, dbs)
