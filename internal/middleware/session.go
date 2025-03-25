@@ -63,7 +63,7 @@ func SessionHandler(store *session.Store, db *gorm.DB) fiber.Handler {
 	}
 }
 
-// 目前沒用到
+// 改特定使用者
 func AuthenticationManagementHandler(store *session.Store, db *gorm.DB) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		confirmRoutes := map[string]string{
@@ -81,14 +81,14 @@ func AuthenticationManagementHandler(store *session.Store, db *gorm.DB) fiber.Ha
 				return errors.New("visitors is not logged in")
 			}
 
-			var userData model.User
+			/* var userData model.User
 
 			r := db.Where("username = ?", username).First(&userData)
 			if r.Error != nil {
 				logrus.Fatal(r.Error.Error())
-			}
+			} */
 
-			if !userData.Management {
+			if username == "root" || username == "seaotterms" {
 				return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 					"msg": "你沒有權限造訪此頁面",
 				})

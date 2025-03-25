@@ -140,6 +140,9 @@ func main() {
 	app.Post("/api/verify", func(c *fiber.Ctx) error {
 		return api.Verify(c, store)
 	})
+	app.Post("/api/authentication", func(c *fiber.Ctx) error {
+		return api.AuthenticationManagementHandler(c, store)
+	})
 
 	/* --------------------------------- */
 	// match all routes

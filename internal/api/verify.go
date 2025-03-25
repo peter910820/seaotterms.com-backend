@@ -11,3 +11,10 @@ func Verify(c *fiber.Ctx, store *session.Store) error {
 		"userData": c.Locals("userData"),
 	})
 }
+
+func AuthenticationManagementHandler(c *fiber.Ctx, store *session.Store) error {
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"msg":      "驗證成功",
+		"userData": c.Locals("userData"),
+	})
+}
