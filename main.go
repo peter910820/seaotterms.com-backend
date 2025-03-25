@@ -63,6 +63,7 @@ func main() {
 	// route group
 	apiGroup := app.Group("/api") // main api route group
 	// register router
+	router.LoginRouter(apiGroup, store, dbs)
 	router.ArticleRouter(apiGroup, store, dbs)
 	router.GalgameRouter(apiGroup, store, dbs)
 	router.GalgameBrandRouter(apiGroup, store, dbs)
@@ -71,17 +72,8 @@ func main() {
 	router.TodoTopicRouter(apiGroup, store, dbs)
 	router.TagRouter(apiGroup, store, dbs)
 
-	// route
 	/* --------------------------------- */
-	// old route
-	apiGroup.Post("/registerHandler", func(c *fiber.Ctx) error {
-		return api.RegisterHandler(c, dbs[os.Getenv("DB_NAME3")])
-	})
-	apiGroup.Post("/loginHandler", func(c *fiber.Ctx) error {
-		return api.Login(c, store, dbs[os.Getenv("DB_NAME3")])
-	})
-	/* --------------------------------- */
-	// verify identity
+	// verify route
 	apiGroup.Post("/verify", middleware.CheckLogin(store, dbs[os.Getenv("DB_NAME3")]), func(c *fiber.Ctx) error {
 		return api.Verify(c, store)
 	})

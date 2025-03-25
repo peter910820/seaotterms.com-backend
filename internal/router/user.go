@@ -13,6 +13,9 @@ import (
 
 func UserRouter(routerGroup fiber.Router, store *session.Store, dbs map[string]*gorm.DB) {
 	userGroup := routerGroup.Group("/users")
+	userGroup.Post("/", func(c *fiber.Ctx) error {
+		return api.RegisterHandler(c, dbs[os.Getenv("DB_NAME3")])
+	})
 	userGroup.Patch("/:id", middleware.CheckLogin(store, dbs[os.Getenv("DB_NAME3")]), func(c *fiber.Ctx) error {
 		return api.UpdateUser(c, dbs[os.Getenv("DB_NAME3")])
 	})
