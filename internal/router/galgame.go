@@ -19,10 +19,10 @@ func GalgameRouter(routerGroup fiber.Router, store *session.Store, dbs map[strin
 	galgameGroup.Get("/:brand", func(c *fiber.Ctx) error {
 		return api.QueryGalgameByBrand(c, dbs[os.Getenv("DB_NAME2")])
 	})
-	galgameGroup.Patch("/develop/:name", middleware.CheckLogin(store, dbs[os.Getenv("DB_NAME3")]), func(c *fiber.Ctx) error {
+	galgameGroup.Patch("/develop/:name", middleware.CheckOwner(store, dbs[os.Getenv("DB_NAME3")]), func(c *fiber.Ctx) error {
 		return api.UpdateGalgameDevelop(c, dbs[os.Getenv("DB_NAME2")])
 	})
-	galgameGroup.Post("/", middleware.CheckLogin(store, dbs[os.Getenv("DB_NAME3")]), func(c *fiber.Ctx) error {
+	galgameGroup.Post("/", middleware.CheckOwner(store, dbs[os.Getenv("DB_NAME3")]), func(c *fiber.Ctx) error {
 		return api.InsertGalgame(c, dbs[os.Getenv("DB_NAME2")])
 	})
 }

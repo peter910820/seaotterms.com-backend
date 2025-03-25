@@ -77,6 +77,9 @@ func main() {
 	apiGroup.Post("/verify", middleware.CheckLogin(store, dbs[os.Getenv("DB_NAME3")]), func(c *fiber.Ctx) error {
 		return api.Verify(c, store)
 	})
+	apiGroup.Post("/auth", middleware.CheckOwner(store, dbs[os.Getenv("DB_NAME3")]), func(c *fiber.Ctx) error {
+		return api.Verify(c, store)
+	})
 
 	/* --------------------------------- */
 	// match all routes

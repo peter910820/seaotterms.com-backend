@@ -38,6 +38,32 @@ func CheckLogin(store *session.Store, db *gorm.DB) fiber.Handler {
 	}
 }
 
+// check if user is root or seaotterms
+func CheckOwner(store *session.Store, db *gorm.DB) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		sess, err := store.Get(c)
+		if err != nil {
+			logrus.Fatal(err)
+		}
+		username := sess.Get("username")
+		if username == nil {
+			logrus.Error("visitors is not logged in")
+			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+				"msg":      "visitors is not logged in",
+				"userData": UserData{},
+			})
+		}
+		if username != "root" && username != "seaotterms" {
+			logrus.Error("你沒有權限造訪此頁面")
+			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+				"msg":      "你沒有權限造訪此頁面",
+				"userData": UserData{},
+			})
+		}
+		return c.Next()
+	}
+}
+
 // check user identity
 func SessionHandler(store *session.Store, db *gorm.DB) fiber.Handler {
 	return func(c *fiber.Ctx) error {
@@ -68,42 +94,6 @@ func SessionHandler(store *session.Store, db *gorm.DB) fiber.Handler {
 				return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 					"msg":      "visitors is not logged in",
 					"userData": UserData{},
-				})
-			}
-			return c.Next()
-		}
-		return c.Next()
-	}
-}
-
-// 改特定使用者
-func AuthenticationManagementHandler(store *session.Store, db *gorm.DB) fiber.Handler {
-	return func(c *fiber.Ctx) error {
-		confirmRoutes := map[string]string{
-			"/api/authentication": "POST",
-		}
-
-		if isPathIn(c.Path(), c.Method(), confirmRoutes) {
-			sess, err := store.Get(c)
-			if err != nil {
-				logrus.Fatal(err)
-			}
-			username := sess.Get("username")
-			if username == nil {
-				logrus.Error("visitors is not logged in")
-				return errors.New("visitors is not logged in")
-			}
-
-			/* var userData model.User
-
-			r := db.Where("username = ?", username).First(&userData)
-			if r.Error != nil {
-				logrus.Fatal(r.Error.Error())
-			} */
-
-			if username == "root" || username == "seaotterms" {
-				return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-					"msg": "你沒有權限造訪此頁面",
 				})
 			}
 			return c.Next()
