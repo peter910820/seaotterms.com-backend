@@ -15,6 +15,7 @@ import (
 	"seaotterms.com-backend/internal/api"
 	"seaotterms.com-backend/internal/middleware"
 	"seaotterms.com-backend/internal/model"
+	"seaotterms.com-backend/internal/router"
 )
 
 var (
@@ -55,93 +56,33 @@ func main() {
 
 	app.Use(cors.New(cors.Config{AllowOrigins: "http://localhost:8080",
 		AllowMethods: "POST, PATCH"}))
+
 	// static folder
 	app.Static("/", frontendFolder)
+
 	// route group
-	apiGroup := app.Group("/api")
-	galgameGroup := apiGroup.Group("/galgame")
-	galgameBrandGroup := apiGroup.Group("/galgame-brand")
-	// middleware
-	app.Use(middleware.SessionHandler(store, dbs[os.Getenv("DB_NAME3")]))
+	apiGroup := app.Group("/api") // main api route group
+
+	router.ArticleRouter(apiGroup, store, dbs)
+	router.GalgameRouter(apiGroup, store, dbs)
+	router.GalgameBrandRouter(apiGroup, store, dbs)
+	router.UserRouter(apiGroup, store, dbs)
+	router.TodoRouter(apiGroup, store, dbs)
+	router.TodoTopicRouter(apiGroup, store, dbs)
+	router.TagRouter(apiGroup, store, dbs)
 
 	// route
 	/* --------------------------------- */
 	// old route
-	app.Post("/api/registerHandler", func(c *fiber.Ctx) error {
+	apiGroup.Post("/registerHandler", func(c *fiber.Ctx) error {
 		return api.RegisterHandler(c, dbs[os.Getenv("DB_NAME3")])
 	})
-	app.Post("/api/loginHandler", func(c *fiber.Ctx) error {
+	apiGroup.Post("/loginHandler", func(c *fiber.Ctx) error {
 		return api.Login(c, store, dbs[os.Getenv("DB_NAME3")])
-	})
-	app.Post("/api/create-article", func(c *fiber.Ctx) error {
-		return api.ArticleHandler(c, dbs[os.Getenv("DB_NAME")])
-	})
-	app.Post("/api/articles", func(c *fiber.Ctx) error {
-		return api.GetArticle(c, dbs[os.Getenv("DB_NAME")])
-	})
-	app.Post("/api/articles/:articleID", func(c *fiber.Ctx) error {
-		return api.GetSingleArticle(c, dbs[os.Getenv("DB_NAME")])
-	})
-	app.Post("/api/tags", func(c *fiber.Ctx) error {
-		return api.GetTags(c, dbs[os.Getenv("DB_NAME")])
-	})
-	app.Post("/api/tags/:tagName", func(c *fiber.Ctx) error {
-		return api.GetTag(c, dbs[os.Getenv("DB_NAME")])
-	})
-	/* --------------------------------- */
-	// new route
-	galgameGroup.Get("/s/:name", func(c *fiber.Ctx) error {
-		return api.QueryGalgame(c, dbs[os.Getenv("DB_NAME2")])
-	})
-	galgameGroup.Get("/:brand", func(c *fiber.Ctx) error {
-		return api.QueryGalgameByBrand(c, dbs[os.Getenv("DB_NAME2")])
-	})
-	galgameGroup.Patch("/develop/:name", func(c *fiber.Ctx) error {
-		return api.UpdateGalgameDevelop(c, dbs[os.Getenv("DB_NAME2")])
-	})
-	galgameGroup.Post("/", func(c *fiber.Ctx) error {
-		return api.InsertGalgame(c, dbs[os.Getenv("DB_NAME2")])
-	})
-
-	galgameBrandGroup.Get("/", middleware.CheckSession(store, dbs[os.Getenv("DB_NAME3")]), func(c *fiber.Ctx) error {
-		return api.QueryAllGalgameBrand(c, dbs[os.Getenv("DB_NAME2")])
-	})
-	galgameBrandGroup.Get("/:brand", func(c *fiber.Ctx) error {
-		return api.QueryGalgameBrand(c, dbs[os.Getenv("DB_NAME2")])
-	})
-	galgameBrandGroup.Post("/", func(c *fiber.Ctx) error {
-		return api.InsertGalgameBrand(c, dbs[os.Getenv("DB_NAME2")])
-	})
-	galgameBrandGroup.Patch("/:brand", func(c *fiber.Ctx) error {
-		return api.UpdateGalgameBrand(c, dbs[os.Getenv("DB_NAME2")])
-	})
-	/* --------------------------------- */
-	app.Patch("/api/users/:id", func(c *fiber.Ctx) error {
-		return api.UpdateUser(c, dbs[os.Getenv("DB_NAME3")])
-	})
-	/* --------------------------------- */
-	app.Get("/api/todos/:owner", func(c *fiber.Ctx) error {
-		return api.QueryTodoByOwner(c, dbs[os.Getenv("DB_NAME3")])
-	})
-	app.Post("/api/todos", func(c *fiber.Ctx) error {
-		return api.InsertTodo(c, dbs[os.Getenv("DB_NAME3")])
-	})
-	app.Patch("/api/todos/:id", func(c *fiber.Ctx) error {
-		return api.UpdateTodoStatus(c, dbs[os.Getenv("DB_NAME3")])
-	})
-	app.Delete("/api/todos/:id", func(c *fiber.Ctx) error {
-		return api.DeleteTodo(c, dbs[os.Getenv("DB_NAME3")])
-	})
-	/* --------------------------------- */
-	app.Get("/api/todo-topics/:owner", func(c *fiber.Ctx) error {
-		return api.QueryTodoTopic(c, dbs[os.Getenv("DB_NAME3")])
-	})
-	app.Post("/api/todo-topics", func(c *fiber.Ctx) error {
-		return api.InsertTodoTopic(c, dbs[os.Getenv("DB_NAME3")])
 	})
 	/* --------------------------------- */
 	// verify identity
-	app.Post("/api/verify", func(c *fiber.Ctx) error {
+	apiGroup.Post("/verify", middleware.CheckLogin(store, dbs[os.Getenv("DB_NAME3")]), func(c *fiber.Ctx) error {
 		return api.Verify(c, store)
 	})
 

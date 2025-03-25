@@ -25,7 +25,7 @@ type UserData struct {
 	Avatar     string    `json:"avatar"`
 }
 
-func CheckSession(store *session.Store, db *gorm.DB) fiber.Handler {
+func CheckLogin(store *session.Store, db *gorm.DB) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		err := checkLogin(c, store, db)
 		if err != nil {
