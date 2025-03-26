@@ -72,6 +72,8 @@ func main() {
 	router.TodoTopicRouter(apiGroup, store, dbs)
 	router.TagRouter(apiGroup, store, dbs)
 
+	// router.AuthRouter(apiGroup, store, dbs)
+
 	/* --------------------------------- */
 	// verify route
 	apiGroup.Post("/verify", middleware.CheckLogin(store, dbs[os.Getenv("DB_NAME3")]), func(c *fiber.Ctx) error {
