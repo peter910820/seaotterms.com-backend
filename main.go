@@ -12,8 +12,6 @@ import (
 	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 
-	"seaotterms.com-backend/internal/api"
-	"seaotterms.com-backend/internal/middleware"
 	"seaotterms.com-backend/internal/model"
 	"seaotterms.com-backend/internal/router"
 )
@@ -73,15 +71,6 @@ func main() {
 	router.TodoRouter(apiGroup, store, dbs)
 	router.TodoTopicRouter(apiGroup, store, dbs)
 	router.TagRouter(apiGroup, store, dbs)
-
-	/* --------------------------------- */
-	// verify route
-	apiGroup.Post("/verify", middleware.CheckLogin(store, dbs[os.Getenv("DB_NAME3")]), func(c *fiber.Ctx) error {
-		return api.Verify(c, store)
-	})
-	apiGroup.Post("/auth", middleware.CheckOwner(store, dbs[os.Getenv("DB_NAME3")]), func(c *fiber.Ctx) error {
-		return api.Verify(c, store)
-	})
 
 	/* --------------------------------- */
 	// match all routes
