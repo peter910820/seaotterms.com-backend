@@ -1,6 +1,7 @@
 package api
 
 import (
+	"errors"
 	"net/url"
 
 	"github.com/gofiber/fiber/v2"
@@ -22,13 +23,18 @@ func ArticleHandler(c *fiber.Ctx, db *gorm.DB) error {
 	var data ArticleData
 
 	if err := c.BodyParser(&data); err != nil {
-		logrus.Fatalf("%v", err)
+		logrus.Error(err)
+		// 500
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"msg": err.Error(),
+		})
 	}
 	err := createArticle(&data, db)
 	if err != nil {
 		// 500
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"msg": err.Error()})
+			"msg": err.Error(),
+		})
 	}
 
 	return c.SendStatus(fiber.StatusOK)
@@ -44,7 +50,8 @@ func createArticle(data *ArticleData, db *gorm.DB) error {
 	logrus.Infof("A article has been create, title name: %s", dataCreate.Title)
 	result := db.Create(&dataCreate)
 	if result.Error != nil {
-		logrus.Fatalf("%v\n", result.Error)
+		logrus.Error(result.Error)
+		return errors.New(result.Error.Error())
 	}
 
 	// check if tag not exist
@@ -66,7 +73,8 @@ func createArticle(data *ArticleData, db *gorm.DB) error {
 	if len(newTags) > 0 {
 		result := db.Create(&newTags)
 		if result.Error != nil {
-			logrus.Fatalf("%v\n", result.Error)
+			logrus.Error(result.Error)
+			return errors.New(result.Error.Error())
 		}
 	}
 	return nil
@@ -77,7 +85,11 @@ func GetArticle(c *fiber.Ctx, db *gorm.DB) error {
 
 	result := db.Order("created_at desc").Find(&articleData)
 	if result.Error != nil {
-		logrus.Fatalf("%v", result.Error)
+		logrus.Error(result.Error)
+		// 500
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"msg": result.Error.Error(),
+		})
 	}
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"data": articleData,
@@ -95,7 +107,10 @@ func GetSingleArticle(c *fiber.Ctx, db *gorm.DB) error {
 			logrus.Info(result.Error)
 			return c.SendStatus(fiber.StatusNotFound)
 		} else {
-			logrus.Fatal(result.Error)
+			// 500
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"msg": result.Error.Error(),
+			})
 		}
 	}
 	logrus.Info("查詢單一文章成功")
@@ -110,15 +125,23 @@ func GetTag(c *fiber.Ctx, db *gorm.DB) error {
 	decodeTag, err := url.QueryUnescape(c.Params("tagName"))
 	if err != nil {
 		logrus.Fatalf("Failed to decode URL: %v", err)
+		// 500
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"msg": err.Error(),
+		})
 	}
 	result := db.Table("articles").Select("id", "title").Where("? = ANY(tags)", decodeTag).Find(&tagData)
 	if result.Error != nil {
 		// if record not exist
 		if result.Error == gorm.ErrRecordNotFound {
-			logrus.Info(result.Error)
+			logrus.Error(result.Error)
 			return c.SendStatus(fiber.StatusNotFound)
 		} else {
-			logrus.Fatal(result.Error)
+			logrus.Error(result.Error)
+			// 500
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"msg": result.Error.Error(),
+			})
 		}
 	}
 	logrus.Infof("查詢指定標籤 %s 全部文章資料成功", decodeTag)

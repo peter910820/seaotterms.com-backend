@@ -78,7 +78,7 @@ func RegisterHandler(c *fiber.Ctx, db *gorm.DB) error {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(data.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"msg": err,
+			"msg": err.Error(),
 		})
 	}
 	data.Password = string(hashedPassword)
