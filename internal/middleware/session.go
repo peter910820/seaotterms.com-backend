@@ -2,7 +2,6 @@ package middleware
 
 import (
 	"errors"
-	"strings"
 	"time"
 
 	"github.com/sirupsen/logrus"
@@ -27,11 +26,22 @@ type UserData struct {
 
 func CheckLogin(store *session.Store, db *gorm.DB) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		err := checkLogin(c, store, db)
+		username, err := checkLogin(c, store)
 		if err != nil {
+			logrus.Error("visitors is not logged in")
 			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-				"msg":      "visitors is not logged in",
-				"userData": UserData{},
+				"msg": "visitors is not logged in",
+			})
+		}
+		strUsername, ok := username.(string)
+		if !ok {
+			logrus.Fatal("session type is not a string, please check the code")
+		}
+		err = refreshProfile(c, strUsername, db)
+		if err != nil {
+			logrus.Error("session has error")
+			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+				"msg": "session has error",
 			})
 		}
 		return c.Next()
@@ -41,62 +51,28 @@ func CheckLogin(store *session.Store, db *gorm.DB) fiber.Handler {
 // check if user is root or seaotterms
 func CheckOwner(store *session.Store, db *gorm.DB) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		sess, err := store.Get(c)
+		username, err := checkLogin(c, store)
 		if err != nil {
-			logrus.Fatal(err)
-		}
-		username := sess.Get("username")
-		if username == nil {
-			logrus.Error("visitors is not logged in")
 			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-				"msg":      "visitors is not logged in",
-				"userData": UserData{},
+				"msg": "visitors is not logged in",
 			})
 		}
-		if username != "root" && username != "seaotterms" {
+		strUsername, ok := username.(string)
+		if !ok {
+			logrus.Fatal("session type is not a string, please check the code")
+		}
+		err = refreshProfile(c, strUsername, db)
+		if err != nil {
+			logrus.Error("session has error")
+			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+				"msg": "session has error",
+			})
+		}
+		if strUsername != "root" && strUsername != "seaotterms" {
 			logrus.Error("你沒有權限造訪此頁面")
 			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-				"msg":      "你沒有權限造訪此頁面",
-				"userData": UserData{},
+				"msg": "你沒有權限造訪此頁面",
 			})
-		}
-		return c.Next()
-	}
-}
-
-// check user identity
-func SessionHandler(store *session.Store, db *gorm.DB) fiber.Handler {
-	return func(c *fiber.Ctx) error {
-		confirmRoutes := map[string]string{
-			"/api/verify":         "POST", // handle front-end router verify
-			"/api/create-article": "POST",
-			"/api/galgame":        "POST",
-			"/api/galgame-brand":  "POST",
-		}
-		confirmRoutesPrefix := map[string]string{
-			"/api/galgame/":       "PATCH",
-			"/api/galgame-brand/": "PATCH",
-			"/api/users/":         "PATCH",
-		}
-		if isPathIn(c.Path(), c.Method(), confirmRoutes) {
-			err := checkLogin(c, store, db)
-			if err != nil {
-				return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-					"msg":      "visitors is not logged in",
-					"userData": UserData{},
-				})
-			}
-			return c.Next()
-		}
-		if isPathPrefix(c.Path(), c.Method(), confirmRoutesPrefix) {
-			err := checkLogin(c, store, db)
-			if err != nil {
-				return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-					"msg":      "visitors is not logged in",
-					"userData": UserData{},
-				})
-			}
-			return c.Next()
 		}
 		return c.Next()
 	}
@@ -104,25 +80,7 @@ func SessionHandler(store *session.Store, db *gorm.DB) fiber.Handler {
 
 /* utils */
 
-func isPathIn(path string, method string, confirmRoutes map[string]string) bool {
-	for key, value := range confirmRoutes {
-		if key == path && value == method {
-			return true
-		}
-	}
-	return false
-}
-
-func isPathPrefix(path string, method string, confirmRoutesPrefix map[string]string) bool {
-	for key, value := range confirmRoutesPrefix {
-		if strings.HasPrefix(path, key) && value == method {
-			return true
-		}
-	}
-	return false
-}
-
-func checkLogin(c *fiber.Ctx, store *session.Store, db *gorm.DB) error {
+func checkLogin(c *fiber.Ctx, store *session.Store) (interface{}, error) {
 	sess, err := store.Get(c)
 	if err != nil {
 		logrus.Fatal(err)
@@ -130,14 +88,18 @@ func checkLogin(c *fiber.Ctx, store *session.Store, db *gorm.DB) error {
 	username := sess.Get("username")
 	if username == nil {
 		logrus.Error("visitors is not logged in")
-		return errors.New("visitors is not logged in")
+		return nil, errors.New("visitors is not logged in")
 	}
+	return username, nil
+}
 
+func refreshProfile(c *fiber.Ctx, username string, db *gorm.DB) error {
 	var userData model.User
 
 	r := db.Where("username = ?", username).First(&userData)
 	if r.Error != nil {
-		logrus.Fatal(r.Error.Error())
+		logrus.Error(r.Error)
+		return r.Error
 	}
 
 	data := UserData{

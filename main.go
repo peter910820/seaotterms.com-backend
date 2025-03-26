@@ -62,7 +62,9 @@ func main() {
 
 	// route group
 	apiGroup := app.Group("/api") // main api route group
+
 	// register router
+	router.AuthRouter(apiGroup, store, dbs) // check identity for front-end routes
 	router.LoginRouter(apiGroup, store, dbs)
 	router.ArticleRouter(apiGroup, store, dbs)
 	router.GalgameRouter(apiGroup, store, dbs)
@@ -71,8 +73,6 @@ func main() {
 	router.TodoRouter(apiGroup, store, dbs)
 	router.TodoTopicRouter(apiGroup, store, dbs)
 	router.TagRouter(apiGroup, store, dbs)
-
-	// router.AuthRouter(apiGroup, store, dbs)
 
 	/* --------------------------------- */
 	// verify route

@@ -15,13 +15,13 @@ import (
 func AuthRouter(routerGroup fiber.Router, store *session.Store, dbs map[string]*gorm.DB) {
 	authGroup := routerGroup.Group("/auth")
 	authGroup.Get("/", middleware.CheckLogin(store, dbs[os.Getenv("DB_NAME3")]), func(c *fiber.Ctx) error {
-		return api.Verify(c, store)
+		return api.AuthLogin(c, store)
 	})
 	// check if root identity
 	authGroup.Get("/root", middleware.CheckOwner(store, dbs[os.Getenv("DB_NAME3")]), func(c *fiber.Ctx) error {
-		return api.Verify(c, store)
+		return api.AuthLogin(c, store)
 	})
 	// authGroup.Get("/specific", middleware.CheckLogin(store, dbs[os.Getenv("DB_NAME3")]), func(c *fiber.Ctx) error {
-	// 	return api.Verify(c, store)
+	// 	return api.AuthLogin(c, store)
 	// })
 }
