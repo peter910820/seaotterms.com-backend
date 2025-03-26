@@ -71,7 +71,8 @@ func CheckOwner(store *session.Store, db *gorm.DB) fiber.Handler {
 		if strUsername != "root" && strUsername != "seaotterms" {
 			logrus.Error("你沒有權限造訪此頁面")
 			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-				"msg": "你沒有權限造訪此頁面",
+				"msg":      "你沒有權限造訪此頁面",
+				"userData": c.Locals("userData"),
 			})
 		}
 		return c.Next()
@@ -87,7 +88,6 @@ func checkLogin(c *fiber.Ctx, store *session.Store) (interface{}, error) {
 	}
 	username := sess.Get("username")
 	if username == nil {
-		logrus.Error("visitors is not logged in")
 		return nil, errors.New("visitors is not logged in")
 	}
 	return username, nil
@@ -98,7 +98,6 @@ func refreshProfile(c *fiber.Ctx, username string, db *gorm.DB) error {
 
 	r := db.Where("username = ?", username).First(&userData)
 	if r.Error != nil {
-		logrus.Error(r.Error)
 		return r.Error
 	}
 
