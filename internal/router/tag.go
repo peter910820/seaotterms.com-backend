@@ -13,9 +13,9 @@ import (
 func TagRouter(routerGroup fiber.Router, store *session.Store, dbs map[string]*gorm.DB) {
 	tagGroup := routerGroup.Group("/tags")
 	tagGroup.Get("/", func(c *fiber.Ctx) error {
-		return api.GetTags(c, dbs[os.Getenv("DB_NAME")])
+		return api.QueryTags(c, dbs[os.Getenv("DB_NAME")])
 	})
 	tagGroup.Get("/:tagName", func(c *fiber.Ctx) error {
-		return api.GetTag(c, dbs[os.Getenv("DB_NAME")])
+		return api.QueryTag(c, dbs[os.Getenv("DB_NAME")])
 	})
 }
