@@ -50,7 +50,7 @@ func QueryTodoByOwner(c *fiber.Ctx, db *gorm.DB) error {
 	})
 }
 
-func InsertTodo(c *fiber.Ctx, db *gorm.DB) error {
+func CreateTodo(c *fiber.Ctx, db *gorm.DB) error {
 	// load client data
 	clientData := model.Todo{}
 	if err := c.BodyParser(&clientData); err != nil {

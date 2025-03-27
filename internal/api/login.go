@@ -82,6 +82,8 @@ func Login(c *fiber.Ctx, store *session.Store, db *gorm.DB) error {
 		"msg": "找不到該使用者"})
 }
 
+/* utils */
+
 func CheckPassword(hashedPassword, inputPassword string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(inputPassword))
 	return err == nil

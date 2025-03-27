@@ -20,7 +20,7 @@ func GalgameBrandRouter(routerGroup fiber.Router, store *session.Store, dbs map[
 		return api.QueryGalgameBrand(c, dbs[os.Getenv("DB_NAME2")])
 	})
 	galgameBrandGroup.Post("/", middleware.CheckOwner(store, dbs[os.Getenv("DB_NAME3")]), func(c *fiber.Ctx) error {
-		return api.InsertGalgameBrand(c, dbs[os.Getenv("DB_NAME2")])
+		return api.CreateGalgameBrand(c, dbs[os.Getenv("DB_NAME2")])
 	})
 	galgameBrandGroup.Patch("/:brand", middleware.CheckOwner(store, dbs[os.Getenv("DB_NAME3")]), func(c *fiber.Ctx) error {
 		return api.UpdateGalgameBrand(c, dbs[os.Getenv("DB_NAME2")])

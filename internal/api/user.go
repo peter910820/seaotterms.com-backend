@@ -45,7 +45,7 @@ type RegisterDataForClient struct {
 	CheckPassword string `json:"checkPassword"`
 }
 
-func RegisterHandler(c *fiber.Ctx, db *gorm.DB) error {
+func CreateUser(c *fiber.Ctx, db *gorm.DB) error {
 	var data RegisterDataForClient
 	var find []apiAccount
 

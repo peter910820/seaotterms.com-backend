@@ -77,7 +77,7 @@ func QueryGalgameBrand(c *fiber.Ctx, db *gorm.DB) error {
 }
 
 // insert data to galgamebrand
-func InsertGalgameBrand(c *fiber.Ctx, db *gorm.DB) error {
+func CreateGalgameBrand(c *fiber.Ctx, db *gorm.DB) error {
 	// load client data
 	var clientData BrandRecordForClient
 	if err := c.BodyParser(&clientData); err != nil {

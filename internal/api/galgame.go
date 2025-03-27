@@ -126,7 +126,7 @@ func UpdateGalgameDevelop(c *fiber.Ctx, db *gorm.DB) error {
 }
 
 // insert data to galgame
-func InsertGalgame(c *fiber.Ctx, db *gorm.DB) error {
+func CreateGalgame(c *fiber.Ctx, db *gorm.DB) error {
 	// load client data
 	var clientData GameRecordForClient
 	if err := c.BodyParser(&clientData); err != nil {

@@ -47,7 +47,7 @@ func QueryTodoTopic(c *fiber.Ctx, db *gorm.DB) error {
 	})
 }
 
-func InsertTodoTopic(c *fiber.Ctx, db *gorm.DB) error {
+func CreateTodoTopic(c *fiber.Ctx, db *gorm.DB) error {
 	// load client data
 	clientData := todoTopicForInsert{}
 	if err := c.BodyParser(&clientData); err != nil {

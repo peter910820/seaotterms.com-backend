@@ -17,6 +17,6 @@ func TodoTopicRouter(routerGroup fiber.Router, store *session.Store, dbs map[str
 		return api.QueryTodoTopic(c, dbs[os.Getenv("DB_NAME3")])
 	})
 	todoTopicGroup.Post("/", middleware.CheckLogin(store, dbs[os.Getenv("DB_NAME3")]), func(c *fiber.Ctx) error {
-		return api.InsertTodoTopic(c, dbs[os.Getenv("DB_NAME3")])
+		return api.CreateTodoTopic(c, dbs[os.Getenv("DB_NAME3")])
 	})
 }
