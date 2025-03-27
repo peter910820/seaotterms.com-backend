@@ -34,7 +34,7 @@ func CreateArticle(c *fiber.Ctx, db *gorm.DB) error {
 	}
 	logrus.Infof("A article has been create, title name: %s", dataCreate.Title)
 	r := db.Create(&dataCreate)
-	if r != nil {
+	if r.Error != nil {
 		logrus.Error(r.Error)
 		// 500
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
@@ -44,7 +44,7 @@ func CreateArticle(c *fiber.Ctx, db *gorm.DB) error {
 	// check if tag not exist
 	var existTags []model.Tag
 	r = db.Where("name = ANY(?)", dataCreate.Tags).Find(&existTags)
-	if r != nil {
+	if r.Error != nil {
 		logrus.Error(r.Error)
 		// 500
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
