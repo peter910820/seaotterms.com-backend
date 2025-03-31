@@ -33,7 +33,7 @@ type BrandRecordForUpdate struct {
 func QueryAllGalgameBrand(c *fiber.Ctx, db *gorm.DB) error {
 	var data []model.BrandRecord
 
-	r := db.Order("brand asc").Find(&data)
+	r := db.Order("update_time DESC").Find(&data)
 	if r.Error != nil {
 		logrus.Errorf("%s\n", r.Error.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{

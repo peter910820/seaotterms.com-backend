@@ -17,7 +17,7 @@ func AuthRouter(routerGroup fiber.Router, store *session.Store, dbs map[string]*
 	authGroup.Get("/", middleware.CheckLogin(store, dbs[os.Getenv("DB_NAME3")]), func(c *fiber.Ctx) error {
 		return api.AuthLogin(c, store)
 	})
-	// check if root identity
+	// check if you are the website owner
 	authGroup.Get("/root", middleware.CheckOwner(store, dbs[os.Getenv("DB_NAME3")]), func(c *fiber.Ctx) error {
 		return api.AuthLogin(c, store)
 	})

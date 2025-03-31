@@ -69,7 +69,7 @@ func QueryGalgameByBrand(c *fiber.Ctx, db *gorm.DB) error {
 		})
 	}
 
-	r := db.Where("brand = ?", brand).Find(&data)
+	r := db.Where("brand = ?", brand).Order("end_date DESC").Find(&data)
 	if r.Error != nil {
 		logrus.Fatal(r.Error.Error())
 	}
