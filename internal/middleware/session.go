@@ -28,7 +28,7 @@ func CheckLogin(store *session.Store, db *gorm.DB) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		username, err := checkLogin(c, store)
 		if err != nil {
-			logrus.Error("visitors is not logged in")
+			logrus.Warn("visitors is not logged in")
 			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 				"msg": "visitors is not logged in",
 			})

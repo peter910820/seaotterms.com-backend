@@ -35,7 +35,7 @@ func QueryAllGalgameBrand(c *fiber.Ctx, db *gorm.DB) error {
 
 	r := db.Order("update_time DESC").Find(&data)
 	if r.Error != nil {
-		logrus.Errorf("%s\n", r.Error.Error())
+		logrus.Error(r.Error)
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"msg": r.Error.Error(),
 		})
@@ -52,7 +52,7 @@ func QueryGalgameBrand(c *fiber.Ctx, db *gorm.DB) error {
 	// URL decoding
 	brand, err := url.QueryUnescape(c.Params("brand"))
 	if err != nil {
-		logrus.Errorf("%s\n", err.Error())
+		logrus.Error(err)
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"msg": err.Error(),
 		})
@@ -62,7 +62,7 @@ func QueryGalgameBrand(c *fiber.Ctx, db *gorm.DB) error {
 	if r.Error != nil {
 		// if record not exist
 		if r.Error == gorm.ErrRecordNotFound {
-			logrus.Errorf("%s\n", r.Error.Error())
+			logrus.Error(r.Error)
 			return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
 				"msg": r.Error.Error(),
 			})
@@ -81,7 +81,7 @@ func CreateGalgameBrand(c *fiber.Ctx, db *gorm.DB) error {
 	// load client data
 	var clientData BrandRecordForClient
 	if err := c.BodyParser(&clientData); err != nil {
-		logrus.Errorf("%s\n", err.Error())
+		logrus.Error(err)
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"msg": err.Error(),
 		})
@@ -103,7 +103,7 @@ func CreateGalgameBrand(c *fiber.Ctx, db *gorm.DB) error {
 	}
 	r := db.Create(&data)
 	if r.Error != nil {
-		logrus.Errorf("%s\n", r.Error.Error())
+		logrus.Error(r.Error)
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"msg": r.Error.Error(),
 		})
@@ -119,7 +119,7 @@ func UpdateGalgameBrand(c *fiber.Ctx, db *gorm.DB) error {
 	// load client data
 	var clientData BrandRecordForClient
 	if err := c.BodyParser(&clientData); err != nil {
-		logrus.Errorf("%s\n", err.Error())
+		logrus.Error(err)
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"msg": err.Error(),
 		})
@@ -127,7 +127,7 @@ func UpdateGalgameBrand(c *fiber.Ctx, db *gorm.DB) error {
 	// URL decoding
 	brand, err := url.QueryUnescape(c.Params("brand"))
 	if err != nil {
-		logrus.Errorf("%s\n", err.Error())
+		logrus.Error(err)
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"msg": err.Error(),
 		})

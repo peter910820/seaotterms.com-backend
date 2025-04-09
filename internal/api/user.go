@@ -105,7 +105,7 @@ func UpdateUser(c *fiber.Ctx, db *gorm.DB) error {
 	// load client data
 	var clientData UserDataForClient
 	if err := c.BodyParser(&clientData); err != nil {
-		logrus.Errorf("%s\n", err.Error())
+		logrus.Error(err)
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"msg": err.Error(),
 		})
@@ -113,7 +113,7 @@ func UpdateUser(c *fiber.Ctx, db *gorm.DB) error {
 	// URL decoding
 	id, err := url.QueryUnescape(c.Params("id"))
 	if err != nil {
-		logrus.Errorf("%s\n", err.Error())
+		logrus.Error(err)
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"msg": err.Error(),
 		})
