@@ -78,5 +78,5 @@ func main() {
 		return c.SendFile(frontendFolder + "/index.html")
 	})
 
-	logrus.Fatal(app.Listen(fmt.Sprintf(":%s", os.Getenv("PORT"))))
+	logrus.Fatal(app.Listen(fmt.Sprintf("127.0.0.1:%s", os.Getenv("PORT"))))
 }
