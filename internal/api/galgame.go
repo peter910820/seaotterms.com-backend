@@ -29,7 +29,7 @@ type GameRecordForUpdate struct {
 
 // use game name to query single galgame data
 func QueryGalgame(c *fiber.Ctx, db *gorm.DB) error {
-	var data model.GameRecord
+	var data []model.GameRecord
 	// URL decoding
 	name, err := url.QueryUnescape(c.Params("name"))
 	if err != nil {

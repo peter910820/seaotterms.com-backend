@@ -48,7 +48,7 @@ func QueryAllGalgameBrand(c *fiber.Ctx, db *gorm.DB) error {
 
 // use brand name to query single galgamebrand data
 func QueryGalgameBrand(c *fiber.Ctx, db *gorm.DB) error {
-	var data model.BrandRecord
+	var data []model.BrandRecord
 	// URL decoding
 	brand, err := url.QueryUnescape(c.Params("brand"))
 	if err != nil {
