@@ -68,7 +68,7 @@ func CheckOwner(store *session.Store, db *gorm.DB) fiber.Handler {
 				"msg": "session has error",
 			})
 		}
-		if strUsername != "root" && strUsername != "seaotterms" {
+		if strUsername != "root" && strUsername != "system" && strUsername != "seaotterms" {
 			logrus.Error("你沒有權限造訪此頁面")
 			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 				"msg":      "你沒有權限造訪此頁面",
