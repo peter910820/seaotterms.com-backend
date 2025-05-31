@@ -6,7 +6,8 @@ import (
 	"github.com/lib/pq"
 )
 
-// blog schema
+// seaotterms_com
+
 type Account struct {
 	ID        uint      `gorm:"primaryKey"`
 	Username  string    `gorm:"NOT NULL unique"`
@@ -36,6 +37,7 @@ type Tag struct {
 
 // A00_Blog
 
+// all user info of the blog
 type User struct {
 	ID         uint      `gorm:"primaryKey" json:"id"`
 	Username   string    `gorm:"NOT NULL unique" json:"username"`
@@ -50,6 +52,7 @@ type User struct {
 	UpdateName string    `json:"updateName"`
 }
 
+// all user todos of the blog
 type Todo struct {
 	ID         uint       `gorm:"primaryKey" json:"id"`
 	Owner      string     `gorm:"NOT NULL" json:"owner"`
@@ -63,11 +66,26 @@ type Todo struct {
 	UpdateName string     `json:"updateName"`
 }
 
+// all todo topics of the blog
 type TodoTopic struct {
 	TopicName  string    `gorm:"primaryKey" json:"topicName"`
 	TopicOwner string    `gorm:"primaryKey; default:'root'" json:"topicOwner"`
 	UpdatedAt  time.Time `gorm:"autoCreateTime" json:"updatedAt"`
 	UpdateName string    `json:"updateName"`
+}
+
+// An updated todo of all my public systems
+type SystemTodo struct {
+	ID         uint       `gorm:"primaryKey" json:"id"`
+	SystemName string     `gorm:"NOT NULL" json:"systemName"`
+	Title      string     `gorm:"NOT NULL" json:"title"`
+	Detail     string     `gorm:"NOT NULL" json:"detail"`
+	Status     uint       `gorm:"NOT NULL" json:"status"`
+	Deadline   *time.Time `json:"deadline"`
+	CreatedAt  time.Time  `gorm:"NOT NULL; autoCreateTime" json:"createdAt"`
+	CreateName string     `gorm:"NOT NULL" json:"createName"`
+	UpdatedAt  time.Time  `gorm:"autoUpdateTime" json:"updatedAt"`
+	UpdateName string     `json:"updateName"`
 }
 
 /* --------------------------------- */

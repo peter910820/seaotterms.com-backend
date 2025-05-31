@@ -27,6 +27,7 @@ func Migration(dbName string, db *gorm.DB) {
 		db.AutoMigrate(&User{})
 		db.AutoMigrate(&Todo{})
 		db.AutoMigrate(&TodoTopic{})
+		db.AutoMigrate(&SystemTodo{})
 	default:
 		logrus.Fatal("error in migration function")
 	}
