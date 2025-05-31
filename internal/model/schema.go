@@ -76,16 +76,16 @@ type TodoTopic struct {
 
 // An updated todo of all my public systems
 type SystemTodo struct {
-	ID         uint       `gorm:"primaryKey" json:"id"`
-	SystemName string     `gorm:"NOT NULL" json:"systemName"`
-	Title      string     `gorm:"NOT NULL" json:"title"`
-	Detail     string     `gorm:"NOT NULL" json:"detail"`
-	Status     uint       `gorm:"NOT NULL" json:"status"`
-	Deadline   *time.Time `json:"deadline"`
-	CreatedAt  time.Time  `gorm:"NOT NULL; autoCreateTime" json:"createdAt"`
-	CreateName string     `gorm:"NOT NULL" json:"createName"`
-	UpdatedAt  time.Time  `gorm:"autoUpdateTime" json:"updatedAt"`
-	UpdateName string     `json:"updateName"`
+	ID          uint       `gorm:"primaryKey" json:"id"`
+	SystemName  string     `gorm:"NOT NULL" json:"systemName"`
+	Title       string     `gorm:"NOT NULL" json:"title"`
+	Detail      string     `gorm:"NOT NULL" json:"detail"`
+	Status      uint       `gorm:"NOT NULL" json:"status"`
+	Deadline    *time.Time `json:"deadline"`
+	CreatedAt   time.Time  `gorm:"NOT NULL; autoCreateTime" json:"createdAt"`
+	CreatedName string     `gorm:"NOT NULL" json:"createdName"`
+	UpdatedAt   time.Time  `gorm:"autoUpdateTime" json:"updatedAt"`
+	UpdatedName string     `json:"updatedName"`
 }
 
 /* --------------------------------- */

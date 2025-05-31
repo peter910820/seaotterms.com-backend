@@ -71,6 +71,7 @@ func main() {
 	router.TodoRouter(apiGroup, store, dbs)
 	router.TodoTopicRouter(apiGroup, store, dbs)
 	router.TagRouter(apiGroup, store, dbs)
+	router.SystemTodoRouter(apiGroup, store, dbs)
 
 	/* --------------------------------- */
 	// match all routes
