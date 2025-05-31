@@ -1,10 +1,13 @@
 package api
 
 import (
+	"fmt"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 
+	"seaotterms.com-backend/internal/dto"
 	"seaotterms.com-backend/internal/model"
 )
 
@@ -40,5 +43,37 @@ func QuerySystemTodo(c *fiber.Ctx, db *gorm.DB) error {
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"msg":  "查詢SystemTodo資料成功",
 		"data": data,
+	})
+}
+
+func CreateSystemTodo(c *fiber.Ctx, db *gorm.DB) error {
+	// load client data
+	var clientData dto.SystemTodoCreateRequest
+	if err := c.BodyParser(&clientData); err != nil {
+		logrus.Error(err.Error())
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"msg": err.Error(),
+		})
+	}
+
+	data := model.SystemTodo{
+		SystemName:  clientData.SystemName,
+		Title:       clientData.Title,
+		Detail:      clientData.Detail,
+		Status:      clientData.Status,
+		Deadline:    clientData.Deadline,
+		Urgency:     clientData.Urgency,
+		CreatedName: clientData.CreatedName,
+	}
+	r := db.Create(&data)
+	if r.Error != nil {
+		logrus.Error(r.Error)
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"msg": r.Error.Error(),
+		})
+	}
+	logrus.Infof("系統代辦資料 %s 創建成功", clientData.Title)
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"msg": fmt.Sprintf("系統代辦資料 %s 創建成功", clientData.Title),
 	})
 }
