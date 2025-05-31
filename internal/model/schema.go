@@ -82,6 +82,7 @@ type SystemTodo struct {
 	Detail      string     `gorm:"NOT NULL" json:"detail"`
 	Status      uint       `gorm:"NOT NULL" json:"status"`
 	Deadline    *time.Time `json:"deadline"`
+	Urgency     uint       `gorm:"NOT NULL" json:"urgency"`
 	CreatedAt   time.Time  `gorm:"NOT NULL; autoCreateTime" json:"createdAt"`
 	CreatedName string     `gorm:"NOT NULL" json:"createdName"`
 	UpdatedAt   time.Time  `gorm:"autoUpdateTime" json:"updatedAt"`
