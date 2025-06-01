@@ -13,11 +13,19 @@ import (
 
 func SystemTodoRouter(routerGroup fiber.Router, store *session.Store, dbs map[string]*gorm.DB) {
 	systemTodoGroup := routerGroup.Group("/system-todos")
+
 	systemTodoGroup.Get("/", func(c *fiber.Ctx) error {
 		return api.QuerySystemTodo(c, dbs[os.Getenv("DB_NAME3")])
 	})
 
 	systemTodoGroup.Post("/", middleware.CheckLogin(store, dbs[os.Getenv("DB_NAME3")]), func(c *fiber.Ctx) error {
 		return api.CreateSystemTodo(c, dbs[os.Getenv("DB_NAME3")])
+	})
+
+	systemTodoGroup.Patch("/:id", middleware.CheckOwner(store, dbs[os.Getenv("DB_NAME3")]), func(c *fiber.Ctx) error {
+		return api.UpdateTodoStatus(c, dbs[os.Getenv("DB_NAME3")])
+	})
+	systemTodoGroup.Delete("/:id", middleware.CheckOwner(store, dbs[os.Getenv("DB_NAME3")]), func(c *fiber.Ctx) error {
+		return api.DeleteTodo(c, dbs[os.Getenv("DB_NAME3")])
 	})
 }
