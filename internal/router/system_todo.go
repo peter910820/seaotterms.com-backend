@@ -25,6 +25,12 @@ func SystemTodoRouter(routerGroup fiber.Router, store *session.Store, dbs map[st
 	systemTodoGroup.Patch("/:id", middleware.CheckOwner(store, dbs[os.Getenv("DB_NAME3")]), func(c *fiber.Ctx) error {
 		return api.UpdateSystemTodo(c, dbs[os.Getenv("DB_NAME3")])
 	})
+
+	// quick update
+	systemTodoGroup.Patch("/quick/:id", middleware.CheckOwner(store, dbs[os.Getenv("DB_NAME3")]), func(c *fiber.Ctx) error {
+		return api.QuickUpdateSystemTodo(c, dbs[os.Getenv("DB_NAME3")])
+	})
+
 	systemTodoGroup.Delete("/:id", middleware.CheckOwner(store, dbs[os.Getenv("DB_NAME3")]), func(c *fiber.Ctx) error {
 		return api.DeleteSystemTodo(c, dbs[os.Getenv("DB_NAME3")])
 	})

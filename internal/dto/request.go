@@ -21,3 +21,9 @@ type SystemTodoUpdateRequest struct {
 	Urgency     uint       `json:"urgency"`
 	UpdatedName string     `json:"updatedName"`
 }
+
+type QuickSystemTodoUpdateRequest struct {
+	Status      uint      `json:"status"`
+	UpdatedAt   time.Time `json:"updatedAt"`
+	UpdatedName string    `json:"updatedName"`
+}
