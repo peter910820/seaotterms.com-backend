@@ -13,14 +13,19 @@ import (
 
 func QuerySystemTodo(c *fiber.Ctx, db *gorm.DB) error {
 	// get query param
+	id := c.Query("id")
 	systemName := c.Query("system_name")
 
 	var data []model.SystemTodo
 	var r *gorm.DB
-	if systemName == "" {
+	if id == "" && systemName == "" {
 		r = db.Order("COALESCE(updated_at, created_at) DESC").Find(&data)
 	} else {
-		r = db.Where("system_name = ?", systemName).Order("COALESCE(updated_at, created_at) DESC").Find(&data)
+		if id != "" {
+			r = db.Where("id = ?", id).Order("COALESCE(updated_at, created_at) DESC").Find(&data)
+		} else {
+			r = db.Where("system_name = ?", systemName).Order("COALESCE(updated_at, created_at) DESC").Find(&data)
+		}
 	}
 	if r.Error != nil {
 		// if record not exist
