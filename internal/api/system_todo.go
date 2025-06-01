@@ -2,6 +2,7 @@ package api
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/sirupsen/logrus"
@@ -91,7 +92,6 @@ func UpdateSystemTodo(c *fiber.Ctx, db *gorm.DB) error {
 			"msg": err.Error(),
 		})
 	}
-	logrus.Debugf("%v", clientData)
 	updateData := dto.SystemTodoUpdate{
 		SystemName:  clientData.SystemName,
 		Title:       clientData.Title,
@@ -99,12 +99,12 @@ func UpdateSystemTodo(c *fiber.Ctx, db *gorm.DB) error {
 		Status:      clientData.Status,
 		Deadline:    clientData.Deadline,
 		Urgency:     clientData.Urgency,
+		UpdatedAt:   time.Now(),
 		UpdatedName: clientData.UpdatedName,
 	}
-	logrus.Debugf("%v", updateData)
 	// clientData.UpdatedAt = time.Now()
 	r := db.Model(&model.SystemTodo{}).Where("id = ?", c.Params("id")).
-		Select("system_name", "title", "detail", "status", "deadline", "urgency", "updated_name").
+		Select("system_name", "title", "detail", "status", "deadline", "urgency", "updated_at", "updated_name").
 		Updates(updateData)
 	if r.Error != nil {
 		logrus.Error(r.Error)
