@@ -43,7 +43,6 @@ func QuerySystemTodo(c *fiber.Ctx, db *gorm.DB) error {
 			})
 		}
 	}
-
 	logrus.Info("Query system_Todos table success")
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"msg":  "查詢SystemTodo資料成功",
@@ -92,6 +91,7 @@ func UpdateSystemTodo(c *fiber.Ctx, db *gorm.DB) error {
 			"msg": err.Error(),
 		})
 	}
+	logrus.Debugf("%v", clientData)
 	updateData := dto.SystemTodoUpdate{
 		SystemName:  clientData.SystemName,
 		Title:       clientData.Title,
@@ -101,6 +101,7 @@ func UpdateSystemTodo(c *fiber.Ctx, db *gorm.DB) error {
 		Urgency:     clientData.Urgency,
 		UpdatedName: clientData.UpdatedName,
 	}
+	logrus.Debugf("%v", updateData)
 	// clientData.UpdatedAt = time.Now()
 	r := db.Model(&model.SystemTodo{}).Where("id = ?", c.Params("id")).
 		Select("system_name", "title", "detail", "status", "deadline", "urgency", "updated_name").
