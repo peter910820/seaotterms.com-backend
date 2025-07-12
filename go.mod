@@ -5,7 +5,6 @@ go 1.23.1
 require (
 	github.com/gofiber/fiber/v2 v2.52.5
 	github.com/joho/godotenv v1.5.1
-	github.com/lib/pq v1.10.9
 	github.com/sirupsen/logrus v1.9.3
 	golang.org/x/crypto v0.36.0
 	gorm.io/driver/postgres v1.5.10

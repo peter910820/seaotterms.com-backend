@@ -2,8 +2,6 @@ package model
 
 import (
 	"time"
-
-	"github.com/lib/pq"
 )
 
 // seaotterms_com
@@ -17,20 +15,20 @@ type Account struct {
 	UpdatedAt time.Time // `gorm:"type:timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP"`
 }
 
-type Article struct {
-	ID        uint           `gorm:"primaryKey"`
-	Title     string         `gorm:"NOT NULL"`
-	Username  string         `gorm:"NOT NULL"`
-	Tags      pq.StringArray `gorm:"type:text[]"`
-	Content   string         `gorm:"NOT NULL"`
-	CreatedAt time.Time      // `gorm:"type:timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP"`
-	UpdatedAt time.Time      // `gorm:"type:timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP"`
-}
+// type Article struct {
+// 	ID        uint           `gorm:"primaryKey"`
+// 	Title     string         `gorm:"NOT NULL"`
+// 	Username  string         `gorm:"NOT NULL"`
+// 	Tags      pq.StringArray `gorm:"type:text[]"`
+// 	Content   string         `gorm:"NOT NULL"`
+// 	CreatedAt time.Time      // `gorm:"type:timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP"`
+// 	UpdatedAt time.Time      // `gorm:"type:timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP"`
+// }
 
-type Tag struct {
-	ID   uint   `gorm:"primaryKey"`
-	Name string `gorm:"unique;NOT NULL"`
-}
+// type Tag struct {
+// 	ID   uint   `gorm:"primaryKey"`
+// 	Name string `gorm:"unique;NOT NULL"`
+// }
 
 /* --------------------------------- */
 /* --------------------------------- */
@@ -50,6 +48,25 @@ type User struct {
 	CreateName string    `gorm:"NOT NULL" json:"createName"`
 	UpdatedAt  time.Time `gorm:"autoUpdateTime" json:"updatedAt"`
 	UpdateName string    `json:"updateName"`
+}
+
+// all article tags
+// 不允許修改Name(PK)
+type Tag struct {
+	Name      string    `gorm:"primaryKey" json:"name"`
+	IconName  string    `json:"iconName"`
+	CreatedAt time.Time `gorm:"NOT NULL; autoCreateTime" json:"createdAt"`
+	UpdatedAt time.Time `json:"updatedAt"`
+}
+
+// all article
+type Article struct {
+	ID        uint      `gorm:"primaryKey" json:"id"`
+	Title     string    `gorm:"NOT NULL" json:"title"`
+	Content   string    `gorm:"NOT NULL"`
+	CreatedAt time.Time `gorm:"autoCreateTime" json:"createdAt"`
+	UpdatedAt time.Time `json:"updatedAt"`
+	Tags      []Tag     `gorm:"many2many:article_tags"`
 }
 
 // all user todos of the blog

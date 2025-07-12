@@ -27,3 +27,9 @@ type QuickSystemTodoUpdateRequest struct {
 	UpdatedAt   time.Time `json:"updatedAt"`
 	UpdatedName string    `json:"updatedName"`
 }
+
+type ArticleCreateRequest struct {
+	Title   string   `json:"title"`
+	Content string   `json:"content"`
+	Tags    []string `json:"tags"`
+}

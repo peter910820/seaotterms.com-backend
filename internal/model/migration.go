@@ -16,15 +16,13 @@ func Migration(dbName string, db *gorm.DB) {
 	}
 
 	switch dbName {
-	case os.Getenv("DB_NAME"):
-		db.AutoMigrate(&Account{})
-		db.AutoMigrate(&Article{})
-		db.AutoMigrate(&Tag{})
 	case os.Getenv("DB_NAME2"):
 		db.AutoMigrate(&BrandRecord{})
 		db.AutoMigrate(&GameRecord{})
 	case os.Getenv("DB_NAME3"):
 		db.AutoMigrate(&User{})
+		db.AutoMigrate(&Tag{})
+		db.AutoMigrate(&Article{})
 		db.AutoMigrate(&Todo{})
 		db.AutoMigrate(&TodoTopic{})
 		db.AutoMigrate(&SystemTodo{})

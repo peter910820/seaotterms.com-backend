@@ -19,7 +19,4 @@ func ArticleRouter(routerGroup fiber.Router, store *session.Store, dbs map[strin
 	articleGroup.Post("/", middleware.CheckLogin(store, dbs[os.Getenv("DB_NAME3")]), func(c *fiber.Ctx) error {
 		return api.CreateArticle(c, dbs[os.Getenv("DB_NAME")])
 	})
-	articleGroup.Get("/:articleID", func(c *fiber.Ctx) error {
-		return api.QuerySingleArticle(c, dbs[os.Getenv("DB_NAME")])
-	})
 }
