@@ -16,6 +16,7 @@ func Migration(dbName string, db *gorm.DB) {
 	}
 
 	switch dbName {
+	case os.Getenv("DB_NAME"):
 	case os.Getenv("DB_NAME2"):
 		db.AutoMigrate(&BrandRecord{})
 		db.AutoMigrate(&GameRecord{})

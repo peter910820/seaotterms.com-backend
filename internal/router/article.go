@@ -14,9 +14,9 @@ import (
 func ArticleRouter(routerGroup fiber.Router, store *session.Store, dbs map[string]*gorm.DB) {
 	articleGroup := routerGroup.Group("/articles")
 	articleGroup.Get("/", func(c *fiber.Ctx) error {
-		return api.QueryArticle(c, dbs[os.Getenv("DB_NAME")])
+		return api.QueryArticle(c, dbs[os.Getenv("DB_NAME3")])
 	})
 	articleGroup.Post("/", middleware.CheckLogin(store, dbs[os.Getenv("DB_NAME3")]), func(c *fiber.Ctx) error {
-		return api.CreateArticle(c, dbs[os.Getenv("DB_NAME")])
+		return api.CreateArticle(c, dbs[os.Getenv("DB_NAME3")])
 	})
 }

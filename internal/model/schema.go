@@ -63,10 +63,10 @@ type Tag struct {
 type Article struct {
 	ID        uint      `gorm:"primaryKey" json:"id"`
 	Title     string    `gorm:"NOT NULL" json:"title"`
-	Content   string    `gorm:"NOT NULL"`
+	Content   string    `gorm:"NOT NULL" json:"content"`
 	CreatedAt time.Time `gorm:"autoCreateTime" json:"createdAt"`
 	UpdatedAt time.Time `json:"updatedAt"`
-	Tags      []Tag     `gorm:"many2many:article_tags"`
+	Tags      []Tag     `gorm:"many2many:article_tags" json:"tags"`
 }
 
 // all user todos of the blog
