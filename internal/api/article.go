@@ -59,9 +59,9 @@ func QueryArticle(c *fiber.Ctx, db *gorm.DB) error {
 
 	id := c.Query("id")
 	if id != "" {
-		err = db.First(&articleData, id).Error
+		err = db.Preload("Tags").First(&articleData, id).Error
 	} else {
-		err = db.Order("created_at desc").Find(&articleData).Error
+		err = db.Preload("Tags").Order("created_at desc").Find(&articleData).Error
 	}
 	if err != nil {
 		logrus.Error(err)
