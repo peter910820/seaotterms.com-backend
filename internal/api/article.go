@@ -1,6 +1,7 @@
 package api
 
 import (
+	"net/url"
 	"strings"
 
 	"github.com/gofiber/fiber/v2"
@@ -72,5 +73,24 @@ func QueryArticle(c *fiber.Ctx, db *gorm.DB) error {
 	logrus.Info("query articles success")
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"data": articleData,
+	})
+}
+
+func QueryArticleForTag(c *fiber.Ctx, db *gorm.DB) error {
+	var articles []model.Article
+	// URL decoding
+	name, err := url.QueryUnescape(c.Params("tagName"))
+	if err != nil {
+		return c.SendStatus(fiber.StatusInternalServerError)
+	}
+	err = db.Joins("JOIN article_tags ON article_tags.article_id = articles.id").
+		Joins("JOIN tags ON tags.name = article_tags.tag_name").
+		Where("tags.name = ?", name).
+		Find(&articles).Error
+	if err != nil {
+		return c.SendStatus(fiber.StatusInternalServerError)
+	}
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"data": articles,
 	})
 }

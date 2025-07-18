@@ -15,17 +15,18 @@ type TagData struct {
 	Title string
 }
 
-func QueryTags(c *fiber.Ctx, db *gorm.DB) error {
+func QueryTag(c *fiber.Ctx, db *gorm.DB) error {
 	var tagData []model.Tag
 
-	result := db.Order("id desc").Find(&tagData)
+	result := db.Order("name desc").Find(&tagData)
 	if result.Error != nil {
 		// if record not exist
 		if result.Error == gorm.ErrRecordNotFound {
-			logrus.Info(result.Error)
+			logrus.Error(result.Error)
 			return c.SendStatus(fiber.StatusNotFound)
 		} else {
-			logrus.Fatal(result.Error)
+			logrus.Error(result.Error)
+			return c.SendStatus(fiber.StatusInternalServerError)
 		}
 	}
 	logrus.Info("查詢全部tag資料成功")
@@ -34,7 +35,7 @@ func QueryTags(c *fiber.Ctx, db *gorm.DB) error {
 	})
 }
 
-func QueryTag(c *fiber.Ctx, db *gorm.DB) error {
+func QuerySingleTag(c *fiber.Ctx, db *gorm.DB) error {
 	var tagData []TagData
 
 	decodeTag, err := url.QueryUnescape(c.Params("tagName"))
