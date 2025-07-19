@@ -17,8 +17,6 @@ func InitDsn(choiceDb int) (string, *gorm.DB) {
 		dbname = os.Getenv("DB_NAME")
 	case 1:
 		dbname = os.Getenv("DB_NAME2")
-	case 2:
-		dbname = os.Getenv("DB_NAME3")
 	default:
 		logrus.Fatal("error in init dsn function")
 	}

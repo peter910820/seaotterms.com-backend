@@ -13,10 +13,12 @@ import (
 
 func UserRouter(routerGroup fiber.Router, store *session.Store, dbs map[string]*gorm.DB) {
 	userGroup := routerGroup.Group("/users")
+	dbName := os.Getenv("DB_NAME")
+
 	userGroup.Post("/", func(c *fiber.Ctx) error {
-		return api.CreateUser(c, dbs[os.Getenv("DB_NAME3")])
+		return api.CreateUser(c, dbs[dbName])
 	})
-	userGroup.Patch("/:id", middleware.CheckLogin(store, dbs[os.Getenv("DB_NAME3")]), func(c *fiber.Ctx) error {
-		return api.UpdateUser(c, dbs[os.Getenv("DB_NAME3")])
+	userGroup.Patch("/:id", middleware.CheckLogin(store, dbs[dbName]), func(c *fiber.Ctx) error {
+		return api.UpdateUser(c, dbs[dbName])
 	})
 }

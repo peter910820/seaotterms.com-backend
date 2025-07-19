@@ -14,14 +14,16 @@ import (
 // this router is use to check identity for front-end routes
 func AuthRouter(routerGroup fiber.Router, store *session.Store, dbs map[string]*gorm.DB) {
 	authGroup := routerGroup.Group("/auth")
-	authGroup.Get("/", middleware.CheckLogin(store, dbs[os.Getenv("DB_NAME3")]), func(c *fiber.Ctx) error {
+	dbName := os.Getenv("DB_NAME")
+
+	authGroup.Get("/", middleware.CheckLogin(store, dbs[dbName]), func(c *fiber.Ctx) error {
 		return api.AuthLogin(c, store)
 	})
 	// check if you are the website owner
-	authGroup.Get("/root", middleware.CheckOwner(store, dbs[os.Getenv("DB_NAME3")]), func(c *fiber.Ctx) error {
+	authGroup.Get("/root", middleware.CheckOwner(store, dbs[dbName]), func(c *fiber.Ctx) error {
 		return api.AuthLogin(c, store)
 	})
-	// authGroup.Get("/specific", middleware.CheckLogin(store, dbs[os.Getenv("DB_NAME3")]), func(c *fiber.Ctx) error {
+	// authGroup.Get("/specific", middleware.CheckLogin(store, dbs[dbName]), func(c *fiber.Ctx) error {
 	// 	return api.AuthLogin(c, store)
 	// })
 }

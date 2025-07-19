@@ -12,10 +12,12 @@ import (
 
 func TagRouter(routerGroup fiber.Router, store *session.Store, dbs map[string]*gorm.DB) {
 	tagGroup := routerGroup.Group("/tags")
+	dbName := os.Getenv("DB_NAME")
+
 	tagGroup.Get("/", func(c *fiber.Ctx) error {
-		return api.QueryTag(c, dbs[os.Getenv("DB_NAME3")])
+		return api.QueryTag(c, dbs[dbName])
 	})
 	tagGroup.Get("/:tagName", func(c *fiber.Ctx) error {
-		return api.QueryArticleForTag(c, dbs[os.Getenv("DB_NAME3")])
+		return api.QueryArticleForTag(c, dbs[dbName])
 	})
 }

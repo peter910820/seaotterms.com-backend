@@ -13,16 +13,18 @@ import (
 
 func GalgameBrandRouter(routerGroup fiber.Router, store *session.Store, dbs map[string]*gorm.DB) {
 	galgameBrandGroup := routerGroup.Group("/galgame-brand")
+	dbName := os.Getenv("DB_NAME2")
+
 	galgameBrandGroup.Get("/", func(c *fiber.Ctx) error {
-		return api.QueryAllGalgameBrand(c, dbs[os.Getenv("DB_NAME2")])
+		return api.QueryAllGalgameBrand(c, dbs[dbName])
 	})
 	galgameBrandGroup.Get("/:brand", func(c *fiber.Ctx) error {
-		return api.QueryGalgameBrand(c, dbs[os.Getenv("DB_NAME2")])
+		return api.QueryGalgameBrand(c, dbs[dbName])
 	})
-	galgameBrandGroup.Post("/", middleware.CheckOwner(store, dbs[os.Getenv("DB_NAME3")]), func(c *fiber.Ctx) error {
-		return api.CreateGalgameBrand(c, dbs[os.Getenv("DB_NAME2")])
+	galgameBrandGroup.Post("/", middleware.CheckOwner(store, dbs[os.Getenv("DB_NAME")]), func(c *fiber.Ctx) error {
+		return api.CreateGalgameBrand(c, dbs[dbName])
 	})
-	galgameBrandGroup.Patch("/:brand", middleware.CheckOwner(store, dbs[os.Getenv("DB_NAME3")]), func(c *fiber.Ctx) error {
-		return api.UpdateGalgameBrand(c, dbs[os.Getenv("DB_NAME2")])
+	galgameBrandGroup.Patch("/:brand", middleware.CheckOwner(store, dbs[os.Getenv("DB_NAME")]), func(c *fiber.Ctx) error {
+		return api.UpdateGalgameBrand(c, dbs[dbName])
 	})
 }

@@ -13,16 +13,18 @@ import (
 
 func TodoRouter(routerGroup fiber.Router, store *session.Store, dbs map[string]*gorm.DB) {
 	todoGroup := routerGroup.Group("/todos")
+	dbName := os.Getenv("DB_NAME")
+
 	todoGroup.Get("/:owner", func(c *fiber.Ctx) error {
-		return api.QueryTodoByOwner(c, dbs[os.Getenv("DB_NAME3")])
+		return api.QueryTodoByOwner(c, dbs[dbName])
 	})
-	todoGroup.Post("/", middleware.CheckLogin(store, dbs[os.Getenv("DB_NAME3")]), func(c *fiber.Ctx) error {
-		return api.CreateTodo(c, dbs[os.Getenv("DB_NAME3")])
+	todoGroup.Post("/", middleware.CheckLogin(store, dbs[dbName]), func(c *fiber.Ctx) error {
+		return api.CreateTodo(c, dbs[dbName])
 	})
-	todoGroup.Patch("/:id", middleware.CheckLogin(store, dbs[os.Getenv("DB_NAME3")]), func(c *fiber.Ctx) error {
-		return api.UpdateTodoStatus(c, dbs[os.Getenv("DB_NAME3")])
+	todoGroup.Patch("/:id", middleware.CheckLogin(store, dbs[dbName]), func(c *fiber.Ctx) error {
+		return api.UpdateTodoStatus(c, dbs[dbName])
 	})
-	todoGroup.Delete("/:id", middleware.CheckLogin(store, dbs[os.Getenv("DB_NAME3")]), func(c *fiber.Ctx) error {
-		return api.DeleteTodo(c, dbs[os.Getenv("DB_NAME3")])
+	todoGroup.Delete("/:id", middleware.CheckLogin(store, dbs[dbName]), func(c *fiber.Ctx) error {
+		return api.DeleteTodo(c, dbs[dbName])
 	})
 }

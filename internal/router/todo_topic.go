@@ -13,10 +13,12 @@ import (
 
 func TodoTopicRouter(routerGroup fiber.Router, store *session.Store, dbs map[string]*gorm.DB) {
 	todoTopicGroup := routerGroup.Group("/todo-topics")
+	dbName := os.Getenv("DB_NAME")
+
 	todoTopicGroup.Get("/:owner", func(c *fiber.Ctx) error {
-		return api.QueryTodoTopic(c, dbs[os.Getenv("DB_NAME3")])
+		return api.QueryTodoTopic(c, dbs[dbName])
 	})
-	todoTopicGroup.Post("/", middleware.CheckLogin(store, dbs[os.Getenv("DB_NAME3")]), func(c *fiber.Ctx) error {
-		return api.CreateTodoTopic(c, dbs[os.Getenv("DB_NAME3")])
+	todoTopicGroup.Post("/", middleware.CheckLogin(store, dbs[dbName]), func(c *fiber.Ctx) error {
+		return api.CreateTodoTopic(c, dbs[dbName])
 	})
 }
