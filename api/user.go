@@ -12,7 +12,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 
-	"seaotterms.com-backend/internal/model"
+	"seaotterms.com-backend/model"
 )
 
 type UserDataForClient struct {

@@ -8,8 +8,8 @@ import (
 	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 
-	"seaotterms.com-backend/internal/dto"
-	"seaotterms.com-backend/internal/model"
+	"seaotterms.com-backend/dto"
+	"seaotterms.com-backend/model"
 )
 
 func QuerySystemTodo(c *fiber.Ctx, db *gorm.DB) error {

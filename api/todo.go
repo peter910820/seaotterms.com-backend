@@ -10,7 +10,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 
-	"seaotterms.com-backend/internal/model"
+	"seaotterms.com-backend/model"
 )
 
 type todoForClient struct {

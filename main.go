@@ -12,8 +12,8 @@ import (
 	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 
-	"seaotterms.com-backend/internal/model"
-	"seaotterms.com-backend/internal/router"
+	"seaotterms.com-backend/model"
+	"seaotterms.com-backend/router"
 )
 
 var (
@@ -52,8 +52,8 @@ func main() {
 
 	app := fiber.New()
 
-	app.Use(cors.New(cors.Config{AllowOrigins: "http://localhost:8080",
-		AllowMethods: "POST, PATCH"}))
+	app.Use(cors.New(cors.Config{AllowOrigins: "http://localhost:8080", // make dev environment can pass
+		AllowMethods: "POST, PATCH, DELETE"}))
 
 	// static folder
 	app.Static("/", frontendFolder)
@@ -73,7 +73,6 @@ func main() {
 	router.TagRouter(apiGroup, store, dbs)
 	router.SystemTodoRouter(apiGroup, store, dbs)
 
-	/* --------------------------------- */
 	// match all routes
 	app.Get("*", func(c *fiber.Ctx) error {
 		return c.SendFile(frontendFolder + "/index.html")

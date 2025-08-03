@@ -10,8 +10,8 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 
-	"seaotterms.com-backend/internal/middleware"
-	"seaotterms.com-backend/internal/model"
+	"seaotterms.com-backend/middleware"
+	"seaotterms.com-backend/model"
 )
 
 type LoginData struct {

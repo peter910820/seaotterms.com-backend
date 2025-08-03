@@ -6,7 +6,7 @@ import (
 
 	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
-	"seaotterms.com-backend/internal/model"
+	"seaotterms.com-backend/model"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/session"

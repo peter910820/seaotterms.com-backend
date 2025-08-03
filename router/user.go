@@ -7,8 +7,8 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/session"
 	"gorm.io/gorm"
 
-	"seaotterms.com-backend/internal/api"
-	"seaotterms.com-backend/internal/middleware"
+	"seaotterms.com-backend/api"
+	"seaotterms.com-backend/middleware"
 )
 
 func UserRouter(routerGroup fiber.Router, store *session.Store, dbs map[string]*gorm.DB) {
